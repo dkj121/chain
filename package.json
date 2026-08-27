@@ -1,0 +1,41 @@
+{
+  "name": "clain",
+  "displayName": "Clain",
+  "description": "AI-driven visual design tool for ASP.NET Core Razor applications",
+  "version": "0.1.0",
+  "publisher": "clain",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:clain.startPreview"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "clain.startPreview",
+        "title": "Clain: Start Preview"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.85.0",
+    "@types/mocha": "^10.0.6",
+    "@types/glob": "^8.1.0",
+    "@vscode/test-electron": "^2.3.8",
+    "mocha": "^10.2.0",
+    "glob": "^10.3.10",
+    "typescript": "^5.3.0"
+  }
+}
