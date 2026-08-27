@@ -19,6 +19,10 @@
       {
         "command": "clain.startPreview",
         "title": "Clain: Start Preview"
+      },
+      {
+        "command": "clain.stopPreview",
+        "title": "Clain: Stop Preview"
       }
     ]
   },

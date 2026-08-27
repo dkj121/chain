@@ -18,4 +18,9 @@ suite('Extension Test Suite', () => {
         const commands = await vscode.commands.getCommands(true);
         assert.ok(commands.includes('clain.startPreview'));
     });
+
+    test('Stop Preview command should be registered', async () => {
+        const commands = await vscode.commands.getCommands(true);
+        assert.ok(commands.includes('clain.stopPreview'));
+    });
 });
