@@ -1,5 +1,8 @@
 import * as child_process from 'child_process';
 
+const KESTREL_READY_SIGNAL = 'Now listening on:';
+const KESTREL_STARTUP_TIMEOUT_MS = 30000;
+
 export interface OutputChannel {
     append(message: string): void;
     clear(): void;
@@ -46,14 +49,14 @@ export class KestrelManager {
 
             let startupTimeout = setTimeout(() => {
                 this.stop();
-                reject(new Error('Kestrel startup timed out after 30 seconds'));
-            }, 30000);
+                reject(new Error(`Kestrel startup timed out after ${KESTREL_STARTUP_TIMEOUT_MS / 1000} seconds`));
+            }, KESTREL_STARTUP_TIMEOUT_MS);
 
             this.process.stdout.on('data', (data: Buffer) => {
                 const output = data.toString();
                 this.outputChannel.append(output);
 
-                if (output.includes('Now listening on:')) {
+                if (output.includes(KESTREL_READY_SIGNAL)) {
                     this.isReady = true;
                     clearTimeout(startupTimeout);
                     resolve();
