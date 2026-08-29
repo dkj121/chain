@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 import { KestrelManager } from './kestrelManager';
-import * as path from 'path';
 
 let kestrelManager: KestrelManager;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Clain extension is now active');
 
-    kestrelManager = new KestrelManager();
+    const outputChannel = vscode.window.createOutputChannel('Clain - Kestrel');
+    kestrelManager = new KestrelManager(outputChannel);
 
     const startPreviewCommand = vscode.commands.registerCommand('clain.startPreview', async () => {
         try {
@@ -46,6 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             // Update webview to show ready state
             panel.webview.html = getWebviewContent('ready');
+            vscode.window.showInformationMessage('Kestrel server is ready');
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);

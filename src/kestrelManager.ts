@@ -1,13 +1,27 @@
 import * as child_process from 'child_process';
-import * as vscode from 'vscode';
+
+export interface OutputChannel {
+    append(message: string): void;
+    clear(): void;
+    show(): void;
+    dispose(): void;
+}
+
+export interface ProcessSpawner {
+    spawn(command: string, args: string[], options: child_process.SpawnOptions): child_process.ChildProcess;
+}
 
 export class KestrelManager {
     private process: child_process.ChildProcess | null = null;
-    private outputChannel: vscode.OutputChannel;
+    private outputChannel: OutputChannel;
     private isReady: boolean = false;
+    private processSpawner: ProcessSpawner;
 
-    constructor() {
-        this.outputChannel = vscode.window.createOutputChannel('Clain - Kestrel');
+    constructor(outputChannel: OutputChannel, processSpawner?: ProcessSpawner) {
+        this.outputChannel = outputChannel;
+        this.processSpawner = processSpawner || {
+            spawn: (cmd, args, opts) => child_process.spawn(cmd, args, opts)
+        };
     }
 
     public async start(projectPath: string): Promise<void> {
@@ -20,7 +34,7 @@ export class KestrelManager {
         this.outputChannel.show();
 
         return new Promise((resolve, reject) => {
-            this.process = child_process.spawn('dotnet', ['watch', 'run'], {
+            this.process = this.processSpawner.spawn('dotnet', ['watch', 'run'], {
                 cwd: projectPath,
                 shell: true
             });
@@ -42,7 +56,6 @@ export class KestrelManager {
                 if (output.includes('Now listening on:')) {
                     this.isReady = true;
                     clearTimeout(startupTimeout);
-                    vscode.window.showInformationMessage('Kestrel server is ready');
                     resolve();
                 }
             });
