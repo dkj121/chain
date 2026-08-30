@@ -1,13 +1,20 @@
 export type ConnectionState = 'connecting' | 'connected' | 'error' | 'disconnected';
 
+export interface ConnectionInfo {
+    state: ConnectionState;
+    url?: string;
+    errorMessage?: string;
+}
+
 export interface WebviewContent {
-    getHtml(state: ConnectionState, url?: string, errorMessage?: string): string;
+    getHtml(info: ConnectionInfo): string;
 }
 
 export class WebviewManager {
     private panel: any | null = null; // vscode.WebviewPanel in production
     private connectionState: ConnectionState = 'disconnected';
     private serverUrl: string = '';
+    private errorMessage: string = '';
     private contentProvider: WebviewContent;
 
     constructor(contentProvider: WebviewContent) {
@@ -39,6 +46,7 @@ export class WebviewManager {
 
     public onConnectionError(errorMessage: string): void {
         this.connectionState = 'error';
+        this.errorMessage = errorMessage;
         this.updateContent();
     }
 
@@ -65,9 +73,10 @@ export class WebviewManager {
             return;
         }
 
-        this.panel.webview.html = this.contentProvider.getHtml(
-            this.connectionState,
-            this.serverUrl
-        );
+        this.panel.webview.html = this.contentProvider.getHtml({
+            state: this.connectionState,
+            url: this.serverUrl,
+            errorMessage: this.errorMessage
+        });
     }
 }

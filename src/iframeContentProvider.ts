@@ -1,11 +1,13 @@
-import { WebviewContent, ConnectionState } from './webviewManager';
+import { WebviewContent, ConnectionInfo, ConnectionState } from './webviewManager';
+
+const DEFAULT_CONNECTION_ERROR = 'Failed to connect to server';
 
 export class IframeContentProvider implements WebviewContent {
-    getHtml(state: ConnectionState, url?: string, errorMessage?: string): string {
-        const statusMessage = this.getStatusMessage(state, errorMessage);
-        const statusClass = this.getStatusClass(state);
-        const iframeHtml = state === 'connected' && url
-            ? `<iframe id="preview-frame" src="${url}" title="Preview"></iframe>`
+    getHtml(info: ConnectionInfo): string {
+        const statusMessage = this.getStatusMessage(info.state, info.errorMessage);
+        const statusClass = this.getStatusClass(info.state);
+        const iframeHtml = info.state === 'connected' && info.url
+            ? `<iframe id="preview-frame" src="${info.url}" title="Preview"></iframe>`
             : '';
 
         return `<!DOCTYPE html>
@@ -117,7 +119,7 @@ export class IframeContentProvider implements WebviewContent {
 
     <div class="preview-container">
         ${iframeHtml}
-        ${state !== 'connected' ? this.getPlaceholderHtml(state, errorMessage) : ''}
+        ${info.state !== 'connected' ? this.getPlaceholderHtml(info.state, info.errorMessage) : ''}
     </div>
 
     <script>
@@ -169,7 +171,7 @@ export class IframeContentProvider implements WebviewContent {
             return `
                 <div class="placeholder">
                     <h2>Connection Error</h2>
-                    <p class="error-message">${errorMessage || 'Failed to connect to server'}</p>
+                    <p class="error-message">${errorMessage || DEFAULT_CONNECTION_ERROR}</p>
                 </div>
             `;
         }

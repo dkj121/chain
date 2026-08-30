@@ -1,16 +1,12 @@
 import * as assert from 'assert';
-import { WebviewManager, ConnectionState, WebviewContent } from '../../webviewManager';
+import { WebviewManager, ConnectionState, WebviewContent, ConnectionInfo } from '../../webviewManager';
 
 class MockWebviewContent implements WebviewContent {
-    public lastState: ConnectionState | null = null;
-    public lastUrl: string | undefined;
-    public lastError: string | undefined;
+    public lastInfo: ConnectionInfo | null = null;
 
-    getHtml(state: ConnectionState, url?: string, errorMessage?: string): string {
-        this.lastState = state;
-        this.lastUrl = url;
-        this.lastError = errorMessage;
-        return `<html><body>State: ${state}, URL: ${url}</body></html>`;
+    getHtml(info: ConnectionInfo): string {
+        this.lastInfo = { ...info }; // Make a copy to avoid reference issues
+        return `<html><body>State: ${info.state}, URL: ${info.url}</body></html>`;
     }
 }
 
@@ -57,8 +53,8 @@ suite('WebviewManager Tests', () => {
         webviewManager.createPanel(mockWindow, 'http://localhost:5000');
 
         assert.strictEqual(webviewManager.getConnectionState(), 'connecting');
-        assert.strictEqual(mockContent.lastState, 'connecting');
-        assert.strictEqual(mockContent.lastUrl, 'http://localhost:5000');
+        assert.strictEqual(mockContent.lastInfo?.state, 'connecting');
+        assert.strictEqual(mockContent.lastInfo?.url, 'http://localhost:5000');
     });
 
     test('Should transition to connected state when server ready', () => {
@@ -66,7 +62,7 @@ suite('WebviewManager Tests', () => {
         webviewManager.onServerReady('http://localhost:5000');
 
         assert.strictEqual(webviewManager.getConnectionState(), 'connected');
-        assert.strictEqual(mockContent.lastState, 'connected');
+        assert.strictEqual(mockContent.lastInfo?.state, 'connected');
     });
 
     test('Should transition to error state on connection failure', () => {
@@ -74,7 +70,8 @@ suite('WebviewManager Tests', () => {
         webviewManager.onConnectionError('Connection refused');
 
         assert.strictEqual(webviewManager.getConnectionState(), 'error');
-        assert.strictEqual(mockContent.lastState, 'error');
+        assert.strictEqual(mockContent.lastInfo?.state, 'error');
+        assert.strictEqual(mockContent.lastInfo?.errorMessage, 'Connection refused');
     });
 
     test('Should update webview HTML when state changes', () => {
@@ -92,22 +89,24 @@ suite('WebviewManager Tests', () => {
         webviewManager.createPanel(mockWindow, 'http://localhost:5000');
         webviewManager.onServerReady('http://localhost:5000');
 
-        mockContent.lastState = null; // Reset
+        const initialState = mockContent.lastInfo?.state;
 
         webviewManager.refresh();
 
-        assert.strictEqual(mockContent.lastState, 'connected');
+        // Verify getHtml was called again - lastInfo should still be connected
+        assert.strictEqual(mockContent.lastInfo?.state, 'connected');
+        assert.strictEqual(initialState, 'connected');
     });
 
     test('Should not refresh when not connected', () => {
         webviewManager.createPanel(mockWindow, 'http://localhost:5000');
 
-        mockContent.lastState = null; // Reset to null after createPanel
+        mockContent.lastInfo = null; // Reset to null after createPanel
 
         webviewManager.refresh();
 
         // Should not call getHtml again since we're still connecting
-        assert.strictEqual(mockContent.lastState, null);
+        assert.strictEqual(mockContent.lastInfo, null);
     });
 
     test('Should dispose panel and reset state', () => {
