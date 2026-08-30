@@ -32,72 +32,47 @@ namespace Clain.DesignTime
             // Method 1: Check for RazorSourceSpan in context items (standard approach)
             if (context.Items.TryGetValue("RazorSourceSpan", out var spanObj))
             {
-                return ParseSourceSpanFromObject(spanObj);
+                return ExtractSourceSpanUsingReflection(spanObj, "LineIndex", "CharacterIndex");
             }
 
             // Method 2: Check for source location metadata (alternative approach)
             if (context.Items.TryGetValue("SourceLocation", out var locationObj))
             {
-                return ParseSourceLocationFromObject(locationObj);
-            }
-
-            // Method 3: Try to extract from tag name's diagnostic source (fallback)
-            if (context.Items.TryGetValue(typeof(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute).FullName!, out var attributeObj))
-            {
-                return ParseFromAttributeMetadata(attributeObj);
+                return ExtractSourceSpanUsingReflection(locationObj, "LineIndex", "CharacterIndex");
             }
 
             // Source span unavailable (dynamically generated elements)
             return null;
         }
 
-        private SourceSpanInfo? ParseSourceSpanFromObject(object spanObj)
+        /// <summary>
+        /// Extracts source span information from an object using reflection
+        /// </summary>
+        /// <param name="sourceObj">Object containing source span information</param>
+        /// <param name="linePropertyName">Primary name for line property</param>
+        /// <param name="charPropertyName">Primary name for character property</param>
+        /// <returns>Extracted SourceSpanInfo or null if properties not found</returns>
+        private SourceSpanInfo? ExtractSourceSpanUsingReflection(
+            object sourceObj,
+            string linePropertyName,
+            string charPropertyName)
         {
-            // Use reflection to extract source span information
-            var type = spanObj.GetType();
+            var type = sourceObj.GetType();
 
             var filePathProp = type.GetProperty("FilePath");
-            var lineProp = type.GetProperty("LineIndex") ?? type.GetProperty("Line");
-            var charProp = type.GetProperty("CharacterIndex") ?? type.GetProperty("Character");
+            var lineProp = type.GetProperty(linePropertyName) ?? type.GetProperty("Line");
+            var charProp = type.GetProperty(charPropertyName) ?? type.GetProperty("Character");
 
             if (filePathProp != null && lineProp != null && charProp != null)
             {
                 return new SourceSpanInfo
                 {
-                    FilePath = filePathProp.GetValue(spanObj)?.ToString() ?? "",
-                    Line = Convert.ToInt32(lineProp.GetValue(spanObj)),
-                    Character = Convert.ToInt32(charProp.GetValue(spanObj))
+                    FilePath = filePathProp.GetValue(sourceObj)?.ToString() ?? "",
+                    Line = Convert.ToInt32(lineProp.GetValue(sourceObj)),
+                    Character = Convert.ToInt32(charProp.GetValue(sourceObj))
                 };
             }
 
-            return null;
-        }
-
-        private SourceSpanInfo? ParseSourceLocationFromObject(object locationObj)
-        {
-            var type = locationObj.GetType();
-
-            var filePathProp = type.GetProperty("FilePath");
-            var lineIndexProp = type.GetProperty("LineIndex");
-            var characterIndexProp = type.GetProperty("CharacterIndex");
-
-            if (filePathProp != null && lineIndexProp != null && characterIndexProp != null)
-            {
-                return new SourceSpanInfo
-                {
-                    FilePath = filePathProp.GetValue(locationObj)?.ToString() ?? "",
-                    Line = Convert.ToInt32(lineIndexProp.GetValue(locationObj)),
-                    Character = Convert.ToInt32(characterIndexProp.GetValue(locationObj))
-                };
-            }
-
-            return null;
-        }
-
-        private SourceSpanInfo? ParseFromAttributeMetadata(object attributeObj)
-        {
-            // This is a fallback mechanism for extracting source info from attribute metadata
-            // Implementation depends on internal Razor structures
             return null;
         }
     }

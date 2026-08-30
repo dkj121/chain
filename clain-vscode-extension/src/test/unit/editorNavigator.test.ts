@@ -153,9 +153,9 @@ suite('EditorNavigator Tests', () => {
 
             const selection = mockWindow.lastOptions?.selection;
             assert.ok(selection);
-            assert.strictEqual(selection.start.line, 9); // 0-indexed
+            assert.strictEqual(selection.start.line, 10); // Already 0-indexed from Tag Helper
             assert.strictEqual(selection.start.character, 5);
-            assert.strictEqual(selection.end.line, 9);
+            assert.strictEqual(selection.end.line, 10);
             assert.strictEqual(selection.end.character, 5);
         });
 
@@ -171,7 +171,7 @@ suite('EditorNavigator Tests', () => {
             assert.strictEqual(mockWindow.lastUri.fsPath, '/absolute/path/Views/Home/Index.cshtml');
         });
 
-        test('Should convert line numbers from 1-indexed to 0-indexed', async () => {
+        test('Should use zero-based line numbers directly from Tag Helper', async () => {
             const location: SourceLocation = {
                 file: 'test.cshtml',
                 line: 1,
@@ -181,7 +181,7 @@ suite('EditorNavigator Tests', () => {
             await navigator.navigateToSource(location, '/workspace');
 
             const selection = mockWindow.lastOptions?.selection;
-            assert.strictEqual(selection.start.line, 0);
+            assert.strictEqual(selection.start.line, 1); // No conversion - already 0-indexed
         });
 
         test('Should show error message when file cannot be opened', async () => {

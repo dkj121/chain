@@ -6,14 +6,10 @@ export interface ProjectInfo {
     directory: string;
 }
 
-export interface FileSystemInterface {
-    findFiles(pattern: string, exclude?: string): Promise<string[]>;
-}
-
 export class ProjectDiscovery {
     constructor(
         private workspaceRoot: string,
-        private fileSystem: FileSystemInterface
+        private findFiles: (pattern: string, exclude: string) => Promise<string[]>
     ) {}
 
     /**
@@ -22,7 +18,7 @@ export class ProjectDiscovery {
      */
     public async findProjects(): Promise<ProjectInfo[]> {
         const exclude = '**/node_modules/**,**/bin/**,**/obj/**';
-        const files = await this.fileSystem.findFiles('**/*.csproj', exclude);
+        const files = await this.findFiles('**/*.csproj', exclude);
 
         const projects: ProjectInfo[] = files.map(filePath => {
             const directory = path.dirname(filePath);

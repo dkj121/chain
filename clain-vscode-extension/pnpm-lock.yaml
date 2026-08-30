@@ -17,6 +17,9 @@ importers:
       '@types/node':
         specifier: ^20.x
         version: 20.19.43
+      '@types/sinon':
+        specifier: ^22.0.0
+        version: 22.0.0
       '@types/vscode':
         specifier: ^1.85.0
         version: 1.134.0
@@ -29,6 +32,9 @@ importers:
       mocha:
         specifier: ^10.2.0
         version: 10.2.0
+      sinon:
+        specifier: ^22.1.0
+        version: 22.1.0
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.19.43)(typescript@5.3.2)
@@ -60,6 +66,15 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
+  '@sinonjs/commons@3.0.1':
+    resolution: {integrity: sha512-K3mCHKQ9sVh8o1C9cxkwxaOmXoAMlDxC1mYyHrjqOWEcBjYr76t96zL2zlj5dUGZ3HSw240X1qgH3Mjf1yJWpQ==}
+
+  '@sinonjs/fake-timers@15.4.0':
+    resolution: {integrity: sha512-DsG+8/LscQIQg68J6Ef3dv10u6nVyetYn923s3/sus5eaGfTo1of5WMZSLf0UJc9KDuKPilPH0UDJCjvNbDNCA==}
+
+  '@sinonjs/samsam@10.0.2':
+    resolution: {integrity: sha512-8lVwD1Df1BmzoaOLhMcGGcz/Jyr5QY2KSB75/YK1QgKzoabTeLdIVyhXNZK9ojfSKSdirbXqdbsXXqP9/Ve8+A==}
+
   '@tootallnate/once@1.0.0':
     resolution: {integrity: sha512-KYyTT/T6ALPkIRd2Ge080X/BsXvy9O0hcWTtMWkPvwAwF99+vn6Dv4GzrFT/Nn1LePr+FFDbRXXlqmsy9lw2zA==}
     engines: {node: '>= 6'}
@@ -87,6 +102,12 @@ packages:
 
   '@types/node@20.19.43':
     resolution: {integrity: sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA==}
+
+  '@types/sinon@22.0.0':
+    resolution: {integrity: sha512-TDbVpbccc2HfiqHR09Argj3mHV1KMW7sCCKj52fsl8lbRLkEn7fB1966EWhOKWUBcqfBueZuPoA7/OK1CKiy3g==}
+
+  '@types/sinonjs__fake-timers@15.0.1':
+    resolution: {integrity: sha512-Ko2tjWJq8oozHzHV+reuvS5KYIRAokHnGbDwGh/J64LntgpbuylF74ipEL24HCyRjf9FOlBiBHWBR1RlVKsI1w==}
 
   '@types/vscode@1.134.0':
     resolution: {integrity: sha512-NDEu0hg4sF7+vvFsADsktqUJ6f80LHSZvVK2Ovo1XiQ0/VHck1O3zst+ZZyVA/uvz6vo6LcuoqU2q48YMqOwWw==}
@@ -229,6 +250,10 @@ packages:
 
   diff@5.0.0:
     resolution: {integrity: sha512-/VTCrvm5Z0JGty/BWHljh+BAiw3IK+2j87NGMu8Nwc/f48WoDAC395uomO9ZD117ZOBaHmkX1oyLvkVM/aIT3w==}
+    engines: {node: '>=0.3.1'}
+
+  diff@9.0.0:
+    resolution: {integrity: sha512-svtcdpS8CgJyqAjEQIXdb3OjhFVVYjzGAPO8WGCmRbrml64SPw/jJD4GoE98aR7r25A0XcgrK3F02yw9R/vhQw==}
     engines: {node: '>=0.3.1'}
 
   eastasianwidth@0.2.0:
@@ -500,6 +525,9 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
+  sinon@22.1.0:
+    resolution: {integrity: sha512-n1ajF2rBWMTtEwbKcw4UdFg4nCnDdq/U6RDoxtOd7oapOlRoJ5ynwFx60owROyhDpA9QhMZi0pCO/xtmwFjG7w==}
+
   string-width@4.2.0:
     resolution: {integrity: sha512-zUz5JD+tgqtuDjMhwIg5uFVV3dtqZ9yQJlZVfq4I01/K5Paj5UHj7VyrQOJvzawSVlKpObApbfD0Ed6yJc+1eg==}
     engines: {node: '>=8'}
@@ -552,6 +580,14 @@ packages:
         optional: true
       '@swc/wasm':
         optional: true
+
+  type-detect@4.0.8:
+    resolution: {integrity: sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==}
+    engines: {node: '>=4'}
+
+  type-detect@4.1.0:
+    resolution: {integrity: sha512-Acylog8/luQ8L7il+geoSxhEkazvkslg7PSNKOX59mbB9cOveP5aq9h74Y7YU8yDpJwetzQQrfIwtf4Wp4LKcw==}
+    engines: {node: '>=4'}
 
   typescript@5.3.2:
     resolution: {integrity: sha512-6l+RyNy7oAHDfxC4FzSJcz9vnjTKxrLpDG5M2Vu4SHRVNg6xzqZp6LYSR9zjqQTu8DU/f5xwxUdADOkbrIX2gQ==}
@@ -633,6 +669,19 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
+  '@sinonjs/commons@3.0.1':
+    dependencies:
+      type-detect: 4.0.8
+
+  '@sinonjs/fake-timers@15.4.0':
+    dependencies:
+      '@sinonjs/commons': 3.0.1
+
+  '@sinonjs/samsam@10.0.2':
+    dependencies:
+      '@sinonjs/commons': 3.0.1
+      type-detect: 4.1.0
+
   '@tootallnate/once@1.0.0': {}
 
   '@tsconfig/node10@1.0.13': {}
@@ -655,6 +704,12 @@ snapshots:
   '@types/node@20.19.43':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/sinon@22.0.0':
+    dependencies:
+      '@types/sinonjs__fake-timers': 15.0.1
+
+  '@types/sinonjs__fake-timers@15.0.1': {}
 
   '@types/vscode@1.134.0': {}
 
@@ -783,6 +838,8 @@ snapshots:
   diff@4.0.4: {}
 
   diff@5.0.0: {}
+
+  diff@9.0.0: {}
 
   eastasianwidth@0.2.0: {}
 
@@ -1042,6 +1099,13 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
+  sinon@22.1.0:
+    dependencies:
+      '@sinonjs/commons': 3.0.1
+      '@sinonjs/fake-timers': 15.4.0
+      '@sinonjs/samsam': 10.0.2
+      diff: 9.0.0
+
   string-width@4.2.0:
     dependencies:
       emoji-regex: 8.0.0
@@ -1101,6 +1165,10 @@ snapshots:
       typescript: 5.3.2
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+
+  type-detect@4.0.8: {}
+
+  type-detect@4.1.0: {}
 
   typescript@5.3.2: {}
 

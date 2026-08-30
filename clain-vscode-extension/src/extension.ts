@@ -30,15 +30,6 @@ class WebviewMessageHandler implements MessageHandler {
     }
 }
 
-// VS Code workspace adapter for ProjectDiscovery
-class VscodeFileSystem {
-    async findFiles(pattern: string, exclude?: string): Promise<string[]> {
-        const excludePattern = exclude ? exclude : undefined;
-        const uris = await vscode.workspace.findFiles(pattern, excludePattern);
-        return uris.map(uri => uri.fsPath);
-    }
-}
-
 export function activate(context: vscode.ExtensionContext) {
     console.log('Clain extension is now active');
 
@@ -64,7 +55,13 @@ export function activate(context: vscode.ExtensionContext) {
             }
 
             // Discover .csproj files
-            const discovery = new ProjectDiscovery(workspaceRoot, new VscodeFileSystem());
+            const discovery = new ProjectDiscovery(
+                workspaceRoot,
+                async (pattern, exclude) => {
+                    const uris = await vscode.workspace.findFiles(pattern, exclude);
+                    return uris.map(uri => uri.fsPath);
+                }
+            );
             const projects = await discovery.findProjects();
 
             if (projects.length === 0) {

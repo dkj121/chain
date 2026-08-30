@@ -69,7 +69,7 @@ export class EditorNavigator {
 
     /**
      * Opens a file in the editor and positions the cursor at the specified location
-     * @param location The source location to navigate to
+     * @param location The source location with zero-based line and character indices
      * @param workspaceRoot The workspace root path
      */
     public async navigateToSource(location: SourceLocation, workspaceRoot: string): Promise<void> {
@@ -80,9 +80,8 @@ export class EditorNavigator {
 
         const uri = this.Uri.file(filePath);
 
-        // Convert from 1-indexed to 0-indexed
-        const zeroIndexedLine = location.line - 1;
-        const position = new this.Position(zeroIndexedLine, location.character);
+        // Location already contains zero-based indices from Tag Helper
+        const position = new this.Position(location.line, location.character);
         const range = new this.Range(position, position);
 
         try {
