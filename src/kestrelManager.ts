@@ -28,7 +28,7 @@ export class KestrelManager {
         };
     }
 
-    public async start(projectPath: string): Promise<void> {
+    public async start(workspaceRoot: string, csprojPath: string): Promise<void> {
         if (this.process) {
             throw new Error('Kestrel is already running');
         }
@@ -38,8 +38,8 @@ export class KestrelManager {
         this.outputChannel.show();
 
         return new Promise((resolve, reject) => {
-            this.process = this.processSpawner.spawn('dotnet', ['watch', 'run'], {
-                cwd: projectPath,
+            this.process = this.processSpawner.spawn('dotnet', ['watch', '--project', csprojPath, 'run'], {
+                cwd: workspaceRoot,
                 shell: true
             });
 

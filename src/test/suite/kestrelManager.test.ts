@@ -27,7 +27,7 @@ suite('KestrelManager Behavioral Tests', () => {
     });
 
     test('Detects ready state when "Now listening on:" appears in stdout', async () => {
-        const startPromise = kestrelManager.start('/test/project');
+        const startPromise = kestrelManager.start('/test/workspace', '/test/workspace/MyApp.csproj');
 
         // Simulate Kestrel startup output
         setTimeout(() => {
@@ -42,7 +42,7 @@ suite('KestrelManager Behavioral Tests', () => {
     });
 
     test('Throws error when starting with already running process', async () => {
-        const startPromise = kestrelManager.start('/test/project');
+        const startPromise = kestrelManager.start('/test/workspace', '/test/workspace/MyApp.csproj');
 
         setTimeout(() => {
             mockProcess.stdout.emit('data', Buffer.from('Now listening on: http://localhost:5000'));
@@ -52,13 +52,13 @@ suite('KestrelManager Behavioral Tests', () => {
 
         // Attempt to start again
         await assert.rejects(
-            async () => await kestrelManager.start('/test/project'),
+            async () => await kestrelManager.start('/test/workspace', '/test/workspace/MyApp.csproj'),
             { message: 'Kestrel is already running' }
         );
     });
 
     test('Appends stdout output to output channel', async () => {
-        const startPromise = kestrelManager.start('/test/project');
+        const startPromise = kestrelManager.start('/test/workspace', '/test/workspace/MyApp.csproj');
 
         setTimeout(() => {
             mockProcess.stdout.emit('data', Buffer.from('Building project...'));
@@ -72,7 +72,7 @@ suite('KestrelManager Behavioral Tests', () => {
     });
 
     test('Appends stderr output with [ERROR] prefix', async () => {
-        const startPromise = kestrelManager.start('/test/project');
+        const startPromise = kestrelManager.start('/test/workspace', '/test/workspace/MyApp.csproj');
 
         setTimeout(() => {
             mockProcess.stderr.emit('data', Buffer.from('Warning: deprecated API'));
@@ -85,7 +85,7 @@ suite('KestrelManager Behavioral Tests', () => {
     });
 
     test('Rejects when process emits error event', async () => {
-        const startPromise = kestrelManager.start('/test/project');
+        const startPromise = kestrelManager.start('/test/workspace', '/test/workspace/MyApp.csproj');
 
         setTimeout(() => {
             mockProcess.emit('error', new Error('Command not found'));
@@ -98,7 +98,7 @@ suite('KestrelManager Behavioral Tests', () => {
     });
 
     test('Stop terminates process and updates state', async () => {
-        const startPromise = kestrelManager.start('/test/project');
+        const startPromise = kestrelManager.start('/test/workspace', '/test/workspace/MyApp.csproj');
 
         setTimeout(() => {
             mockProcess.stdout.emit('data', Buffer.from('Now listening on: http://localhost:5000'));
@@ -124,7 +124,7 @@ suite('KestrelManager Behavioral Tests', () => {
     });
 
     test('Process exit event updates state', async () => {
-        const startPromise = kestrelManager.start('/test/project');
+        const startPromise = kestrelManager.start('/test/workspace', '/test/workspace/MyApp.csproj');
 
         setTimeout(() => {
             mockProcess.stdout.emit('data', Buffer.from('Now listening on: http://localhost:5000'));
@@ -142,7 +142,7 @@ suite('KestrelManager Behavioral Tests', () => {
     });
 
     test('Clears and shows output channel on start', async () => {
-        const startPromise = kestrelManager.start('/test/project');
+        const startPromise = kestrelManager.start('/test/workspace', '/test/workspace/MyApp.csproj');
 
         setTimeout(() => {
             mockProcess.stdout.emit('data', Buffer.from('Now listening on: http://localhost:5000'));
@@ -155,7 +155,7 @@ suite('KestrelManager Behavioral Tests', () => {
     });
 
     test('Dispose stops process and disposes output channel', async () => {
-        const startPromise = kestrelManager.start('/test/project');
+        const startPromise = kestrelManager.start('/test/workspace', '/test/workspace/MyApp.csproj');
 
         setTimeout(() => {
             mockProcess.stdout.emit('data', Buffer.from('Now listening on: http://localhost:5000'));

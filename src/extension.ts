@@ -3,6 +3,8 @@ import { KestrelManager } from './kestrelManager';
 import { WebviewManager, MessageHandler } from './webviewManager';
 import { IframeContentProvider } from './iframeContentProvider';
 import { ClickHandler, ClickEvent } from './clickHandler';
+import { ProjectDiscovery } from './projectDiscovery';
+import * as path from 'path';
 
 let kestrelManager: KestrelManager;
 let webviewManager: WebviewManager;
@@ -28,6 +30,15 @@ class WebviewMessageHandler implements MessageHandler {
     }
 }
 
+// VS Code workspace adapter for ProjectDiscovery
+class VscodeFileSystem {
+    async findFiles(pattern: string, exclude?: string): Promise<string[]> {
+        const excludePattern = exclude ? exclude : undefined;
+        const uris = await vscode.workspace.findFiles(pattern, excludePattern);
+        return uris.map(uri => uri.fsPath);
+    }
+}
+
 export function activate(context: vscode.ExtensionContext) {
     console.log('Clain extension is now active');
 
@@ -44,7 +55,7 @@ export function activate(context: vscode.ExtensionContext) {
                 return;
             }
 
-            const projectPath = workspaceFolders[0].uri.fsPath;
+            const workspaceRoot = workspaceFolders[0].uri.fsPath;
 
             // Check if Kestrel is already running
             if (kestrelManager.isRunning()) {
@@ -52,10 +63,40 @@ export function activate(context: vscode.ExtensionContext) {
                 return;
             }
 
-            // Initialize click handler with workspace root
+            // Discover .csproj files
+            const discovery = new ProjectDiscovery(workspaceRoot, new VscodeFileSystem());
+            const projects = await discovery.findProjects();
+
+            if (projects.length === 0) {
+                vscode.window.showErrorMessage('No .csproj files found in the workspace. Please open an ASP.NET Core project.');
+                return;
+            }
+
+            // Show QuickPick to select project
+            const items = projects.map(project => ({
+                label: project.name,
+                description: path.relative(workspaceRoot, project.path),
+                project: project
+            }));
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: 'Select a project to preview',
+                matchOnDescription: true
+            });
+
+            if (!selected) {
+                // User cancelled
+                return;
+            }
+
+            const selectedProject = selected.project;
+            const csprojPath = selectedProject.path;
+            const projectDirectory = selectedProject.directory;
+
+            // Initialize click handler with project directory (Q4: A)
             clickHandler = new ClickHandler(
                 clickOutputChannel,
-                projectPath,
+                projectDirectory,
                 vscode.window,
                 vscode.Uri,
                 vscode.Range,
@@ -70,10 +111,10 @@ export function activate(context: vscode.ExtensionContext) {
             webviewManager.createPanel(vscode.window, 'http://localhost:5000');
 
             // Start Kestrel in background
-            vscode.window.showInformationMessage('Starting Kestrel server...');
+            vscode.window.showInformationMessage(`Starting Kestrel server for ${selectedProject.name}...`);
 
             try {
-                await kestrelManager.start(projectPath);
+                await kestrelManager.start(workspaceRoot, csprojPath);
 
                 // Get the actual server URL from Kestrel output
                 const serverUrl = kestrelManager.getServerUrl() || 'http://localhost:5000';
