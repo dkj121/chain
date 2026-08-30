@@ -2,9 +2,11 @@ import * as vscode from 'vscode';
 import { KestrelManager } from './kestrelManager';
 import { WebviewManager } from './webviewManager';
 import { IframeContentProvider } from './iframeContentProvider';
+import { NuGetManager } from './nugetManager';
 
 let kestrelManager: KestrelManager;
 let webviewManager: WebviewManager;
+let nugetManager: NuGetManager;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Clain extension is now active');
@@ -12,6 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
     const outputChannel = vscode.window.createOutputChannel('Clain - Kestrel');
     kestrelManager = new KestrelManager(outputChannel);
     webviewManager = new WebviewManager(new IframeContentProvider());
+    nugetManager = new NuGetManager();
 
     const startPreviewCommand = vscode.commands.registerCommand('clain.startPreview', async () => {
         try {
@@ -69,10 +72,57 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Preview refreshed');
     });
 
+    const installHtmxTagHelpersCommand = vscode.commands.registerCommand('clain.installHtmxTagHelpers', async () => {
+        try {
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders || workspaceFolders.length === 0) {
+                vscode.window.showErrorMessage('No workspace folder open');
+                return;
+            }
+
+            // Find the folder containing a .csproj file
+            let projectPath: string | undefined;
+            for (const folder of workspaceFolders) {
+                const files = await vscode.workspace.fs.readDirectory(folder.uri);
+                const hasCsproj = files.some(([name]) => name.endsWith('.csproj'));
+                if (hasCsproj) {
+                    projectPath = folder.uri.fsPath;
+                    break;
+                }
+            }
+
+            if (!projectPath) {
+                vscode.window.showErrorMessage('No .csproj file found in workspace folders');
+                return;
+            }
+
+            await vscode.window.withProgress(
+                {
+                    location: vscode.ProgressLocation.Notification,
+                    title: 'Installing HtmxTagHelpers package',
+                    cancellable: false
+                },
+                async (progress) => {
+                    progress.report({ message: 'Adding package...' });
+                    await nugetManager.addPackage(projectPath!, 'HtmxTagHelpers');
+
+                    progress.report({ message: 'Restoring packages...' });
+                    await nugetManager.restore(projectPath!);
+                }
+            );
+
+            vscode.window.showInformationMessage('HtmxTagHelpers package installed successfully');
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            vscode.window.showErrorMessage(`Failed to install HtmxTagHelpers: ${errorMessage}`);
+        }
+    });
+
     context.subscriptions.push(
         startPreviewCommand,
         stopPreviewCommand,
         refreshPreviewCommand,
+        installHtmxTagHelpersCommand,
         kestrelManager,
         webviewManager
     );
