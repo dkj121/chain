@@ -1,20 +1,39 @@
 import * as vscode from 'vscode';
 import { KestrelManager } from './kestrelManager';
-import { WebviewManager } from './webviewManager';
+import { WebviewManager, MessageHandler } from './webviewManager';
 import { IframeContentProvider } from './iframeContentProvider';
-import { NuGetManager } from './nugetManager';
+import { ClickHandler, ClickEvent } from './clickHandler';
 
 let kestrelManager: KestrelManager;
 let webviewManager: WebviewManager;
-let nugetManager: NuGetManager;
+let clickHandler: ClickHandler;
+
+class WebviewMessageHandler implements MessageHandler {
+    constructor(private clickHandler: ClickHandler) {}
+
+    handleMessage(message: any): void {
+        if (message.type === 'click' && message.event) {
+            const clickEvent: ClickEvent = {
+                x: message.event.x || 0,
+                y: message.event.y || 0,
+                tagName: message.event.tagName || 'unknown',
+                id: message.event.id,
+                className: message.event.className,
+                textContent: message.event.textContent,
+                timestamp: message.event.timestamp || Date.now(),
+                dataClainSrc: message.event.dataClainSrc
+            };
+            this.clickHandler.handleClick(clickEvent);
+        }
+    }
+}
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Clain extension is now active');
 
     const outputChannel = vscode.window.createOutputChannel('Clain - Kestrel');
+    const clickOutputChannel = vscode.window.createOutputChannel('Clain - Clicks');
     kestrelManager = new KestrelManager(outputChannel);
-    webviewManager = new WebviewManager(new IframeContentProvider());
-    nugetManager = new NuGetManager();
 
     const startPreviewCommand = vscode.commands.registerCommand('clain.startPreview', async () => {
         try {
@@ -32,6 +51,20 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.window.showWarningMessage('Kestrel is already running');
                 return;
             }
+
+            // Initialize click handler with workspace root
+            clickHandler = new ClickHandler(
+                clickOutputChannel,
+                projectPath,
+                vscode.window,
+                vscode.Uri,
+                vscode.Range,
+                vscode.Position
+            );
+
+            // Create webview manager with message handler
+            const messageHandler = new WebviewMessageHandler(clickHandler);
+            webviewManager = new WebviewManager(new IframeContentProvider(), messageHandler);
 
             // Create webview panel with connecting state
             webviewManager.createPanel(vscode.window, 'http://localhost:5000');
@@ -72,57 +105,10 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Preview refreshed');
     });
 
-    const installHtmxTagHelpersCommand = vscode.commands.registerCommand('clain.installHtmxTagHelpers', async () => {
-        try {
-            const workspaceFolders = vscode.workspace.workspaceFolders;
-            if (!workspaceFolders || workspaceFolders.length === 0) {
-                vscode.window.showErrorMessage('No workspace folder open');
-                return;
-            }
-
-            // Find the folder containing a .csproj file
-            let projectPath: string | undefined;
-            for (const folder of workspaceFolders) {
-                const files = await vscode.workspace.fs.readDirectory(folder.uri);
-                const hasCsproj = files.some(([name]) => name.endsWith('.csproj'));
-                if (hasCsproj) {
-                    projectPath = folder.uri.fsPath;
-                    break;
-                }
-            }
-
-            if (!projectPath) {
-                vscode.window.showErrorMessage('No .csproj file found in workspace folders');
-                return;
-            }
-
-            await vscode.window.withProgress(
-                {
-                    location: vscode.ProgressLocation.Notification,
-                    title: 'Installing HtmxTagHelpers package',
-                    cancellable: false
-                },
-                async (progress) => {
-                    progress.report({ message: 'Adding package...' });
-                    await nugetManager.addPackage(projectPath!, 'HtmxTagHelpers');
-
-                    progress.report({ message: 'Restoring packages...' });
-                    await nugetManager.restore(projectPath!);
-                }
-            );
-
-            vscode.window.showInformationMessage('HtmxTagHelpers package installed successfully');
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            vscode.window.showErrorMessage(`Failed to install HtmxTagHelpers: ${errorMessage}`);
-        }
-    });
-
     context.subscriptions.push(
         startPreviewCommand,
         stopPreviewCommand,
         refreshPreviewCommand,
-        installHtmxTagHelpersCommand,
         kestrelManager,
         webviewManager
     );

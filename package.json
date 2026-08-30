@@ -27,10 +27,6 @@
       {
         "command": "clain.refreshPreview",
         "title": "Clain: Refresh Preview"
-      },
-      {
-        "command": "clain.installHtmxTagHelpers",
-        "title": "Clain: Install HtmxTagHelpers Package"
       }
     ]
   },

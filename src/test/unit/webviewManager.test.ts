@@ -12,7 +12,10 @@ class MockWebviewContent implements WebviewContent {
 
 class MockWebviewPanel {
     public webview = {
-        html: ''
+        html: '',
+        onDidReceiveMessage: (callback: (message: any) => void) => {
+            return { dispose: () => {} };
+        }
     };
     public disposed = false;
 

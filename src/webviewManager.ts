@@ -10,15 +10,22 @@ export interface WebviewContent {
     getHtml(info: ConnectionInfo): string;
 }
 
+export interface MessageHandler {
+    handleMessage(message: any): void;
+}
+
 export class WebviewManager {
     private panel: any | null = null; // vscode.WebviewPanel in production
     private connectionState: ConnectionState = 'disconnected';
     private serverUrl: string = '';
     private errorMessage: string = '';
     private contentProvider: WebviewContent;
+    private messageHandler: MessageHandler | null = null;
+    private messageDisposable: any = null;
 
-    constructor(contentProvider: WebviewContent) {
+    constructor(contentProvider: WebviewContent, messageHandler?: MessageHandler) {
         this.contentProvider = contentProvider;
+        this.messageHandler = messageHandler || null;
     }
 
     public createPanel(vscodeWindow: any, url: string): void {
@@ -34,6 +41,13 @@ export class WebviewManager {
                 retainContextWhenHidden: true
             }
         );
+
+        // Set up message handler if provided
+        if (this.messageHandler && this.panel.webview.onDidReceiveMessage) {
+            this.messageDisposable = this.panel.webview.onDidReceiveMessage(
+                (message: any) => this.messageHandler?.handleMessage(message)
+            );
+        }
 
         this.updateContent();
     }
@@ -61,6 +75,10 @@ export class WebviewManager {
     }
 
     public dispose(): void {
+        if (this.messageDisposable) {
+            this.messageDisposable.dispose();
+            this.messageDisposable = null;
+        }
         if (this.panel) {
             this.panel.dispose();
             this.panel = null;
