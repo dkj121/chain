@@ -19,6 +19,7 @@ export class KestrelManager {
     private outputChannel: OutputChannel;
     private isReady: boolean = false;
     private processSpawner: ProcessSpawner;
+    private serverUrl: string = '';
 
     constructor(outputChannel: OutputChannel, processSpawner?: ProcessSpawner) {
         this.outputChannel = outputChannel;
@@ -58,6 +59,7 @@ export class KestrelManager {
 
                 if (output.includes(KESTREL_READY_SIGNAL)) {
                     this.isReady = true;
+                    this.extractServerUrl(output);
                     clearTimeout(startupTimeout);
                     resolve();
                 }
@@ -99,8 +101,20 @@ export class KestrelManager {
         return this.isReady;
     }
 
+    public getServerUrl(): string {
+        return this.serverUrl;
+    }
+
     public dispose(): void {
         this.stop();
         this.outputChannel.dispose();
+    }
+
+    private extractServerUrl(output: string): void {
+        // Extract URL from "Now listening on: http://localhost:5000" format
+        const match = output.match(/Now listening on:\s+(https?:\/\/[^\s]+)/);
+        if (match && match[1]) {
+            this.serverUrl = match[1];
+        }
     }
 }

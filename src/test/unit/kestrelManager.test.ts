@@ -168,4 +168,32 @@ suite('KestrelManager Behavioral Tests', () => {
         assert.strictEqual(mockProcess.killed, true);
         assert.strictEqual(outputChannel.isDisposed, true);
     });
+
+    test('Extracts server URL from Kestrel output', async () => {
+        const startPromise = kestrelManager.start('/test/project');
+
+        setTimeout(() => {
+            mockProcess.stdout.emit('data', Buffer.from('Now listening on: http://localhost:5000'));
+        }, 10);
+
+        await startPromise;
+
+        assert.strictEqual(kestrelManager.getServerUrl(), 'http://localhost:5000');
+    });
+
+    test('Extracts HTTPS server URL from Kestrel output', async () => {
+        const startPromise = kestrelManager.start('/test/project');
+
+        setTimeout(() => {
+            mockProcess.stdout.emit('data', Buffer.from('Now listening on: https://localhost:5001'));
+        }, 10);
+
+        await startPromise;
+
+        assert.strictEqual(kestrelManager.getServerUrl(), 'https://localhost:5001');
+    });
+
+    test('Returns empty string if URL not extracted', () => {
+        assert.strictEqual(kestrelManager.getServerUrl(), '');
+    });
 });
