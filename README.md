@@ -1,4 +1,4 @@
-# Clain VS Code Extension
+# Clain VS Code
 
 AI-driven visual design tool for ASP.NET Core Razor applications.
 
