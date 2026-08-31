@@ -1,15 +1,36 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Hosting;
 
 namespace Clain.DesignTime
 {
     /// <summary>
-    /// Tag Helper that injects data-clain-src attributes with source location information
+    /// Tag Helper that injects data-clain-src attributes with source location information.
+    /// Attributes are only emitted in design-time environments; in Release builds the
+    /// injection is removed entirely by conditional compilation.
     /// </summary>
     [HtmlTargetElement("*")]
     public class ClainSourceTagHelper : TagHelper
     {
+        /// <summary>
+        /// Environment names in which source mapping attributes are emitted.
+        /// </summary>
+        public static readonly string[] DesignTimeEnvironments = { "Development", "ClainDesign" };
+
+        private readonly IHostEnvironment? _hostEnvironment;
+
+        public ClainSourceTagHelper(IHostEnvironment? hostEnvironment)
+        {
+            _hostEnvironment = hostEnvironment;
+        }
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+#if DEBUG
+            if (!IsDesignTimeEnvironment())
+            {
+                return;
+            }
+
             var sourceSpan = GetRazorSourceSpan(context);
 
             if (sourceSpan != null)
@@ -17,6 +38,24 @@ namespace Clain.DesignTime
                 output.Attributes.Add("data-clain-src",
                     $"{sourceSpan.FilePath}:{sourceSpan.Line}:{sourceSpan.Character}");
             }
+#endif
+        }
+
+        /// <summary>
+        /// Determines whether the current host environment is a design-time environment.
+        /// Returns false when no environment is available, so production hosts that do not
+        /// register IHostEnvironment never receive attributes.
+        /// </summary>
+        public bool IsDesignTimeEnvironment()
+        {
+            if (_hostEnvironment == null)
+            {
+                return false;
+            }
+
+            return DesignTimeEnvironments.Contains(
+                _hostEnvironment.EnvironmentName,
+                StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>

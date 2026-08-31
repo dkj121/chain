@@ -9,7 +9,7 @@ namespace Clain.DesignTime.Tests
         public void Process_AddsDataClainSrcAttribute_WhenSourceSpanAvailable()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper();
+            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
             var context = CreateTagHelperContext(withSourceSpan: true);
             var output = CreateTagHelperOutput("div");
 
@@ -17,16 +17,14 @@ namespace Clain.DesignTime.Tests
             tagHelper.Process(context, output);
 
             // Assert
-            Assert.Contains(output.Attributes, attr => attr.Name == "data-clain-src");
-            var attribute = output.Attributes.First(attr => attr.Name == "data-clain-src");
-            Assert.Equal("Views/Home/Index.cshtml:10:5", attribute.Value);
+            AttributeInjectionAssert.HasValue(output, "Views/Home/Index.cshtml:10:5");
         }
 
         [Fact]
         public void Process_DoesNotAddAttribute_WhenSourceSpanUnavailable()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper();
+            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
             var context = CreateTagHelperContext(withSourceSpan: false);
             var output = CreateTagHelperOutput("div");
 
@@ -41,7 +39,7 @@ namespace Clain.DesignTime.Tests
         public void GetRazorSourceSpan_ReturnsNull_WhenContextItemsEmpty()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper();
+            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
             var context = new TagHelperContext(
                 new TagHelperAttributeList(),
                 new Dictionary<object, object>(),
@@ -58,7 +56,7 @@ namespace Clain.DesignTime.Tests
         public void GetRazorSourceSpan_ExtractsFilePath_WhenRazorSourceSpanPresent()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper();
+            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
             var mockSourceSpan = new MockRazorSourceSpan
             {
                 FilePath = "Views/Home/Index.cshtml",
@@ -88,7 +86,7 @@ namespace Clain.DesignTime.Tests
         public void GetRazorSourceSpan_ExtractsFromSourceLocation_WhenPresent()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper();
+            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
             var mockLocation = new MockSourceLocation
             {
                 FilePath = "Views/Shared/_Layout.cshtml",
@@ -118,7 +116,7 @@ namespace Clain.DesignTime.Tests
         public void GetRazorSourceSpan_HandlesAlternativePropertyNames()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper();
+            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
             var mockSourceSpan = new MockRazorSourceSpanAlternative
             {
                 FilePath = "Pages/Index.cshtml",
