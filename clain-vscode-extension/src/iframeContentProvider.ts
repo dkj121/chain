@@ -124,7 +124,9 @@ export class IframeContentProvider implements WebviewContent {
 
     <script>
         (function() {
+            const vscode = acquireVsCodeApi();
             const iframe = document.getElementById('preview-frame');
+
             if (iframe) {
                 iframe.addEventListener('error', function(e) {
                     console.error('Iframe load error:', e);
@@ -132,8 +134,29 @@ export class IframeContentProvider implements WebviewContent {
 
                 iframe.addEventListener('load', function() {
                     console.log('Iframe loaded successfully');
+
+                    // Inject click capture script into iframe content
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        const script = iframeDoc.createElement('script');
+                        script.textContent = ${this.getClickCaptureScript()};
+                        iframeDoc.body.appendChild(script);
+                    } catch (e) {
+                        console.error('Failed to inject click capture script:', e);
+                    }
                 });
             }
+
+            // Listen for messages from iframe
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'clain-click') {
+                    // Forward click event to extension host
+                    vscode.postMessage({
+                        type: 'click',
+                        event: event.data.event
+                    });
+                }
+            });
         })();
     </script>
 </body>
@@ -155,6 +178,53 @@ export class IframeContentProvider implements WebviewContent {
 
     private getStatusClass(state: ConnectionState): string {
         return state;
+    }
+
+    private getClickCaptureScript(): string {
+        // This script will be injected into the iframe to capture clicks
+        // It needs to be serialized as a string
+        return `\`
+            (function() {
+                console.log('Clain click capture script loaded');
+
+                document.addEventListener('click', function(e) {
+                    // Find the clicked element or closest ancestor with data-clain-src
+                    let element = e.target;
+                    let dataClainSrc = null;
+
+                    while (element && element !== document.body) {
+                        if (element.hasAttribute && element.hasAttribute('data-clain-src')) {
+                            dataClainSrc = element.getAttribute('data-clain-src');
+                            break;
+                        }
+                        element = element.parentElement;
+                    }
+
+                    if (dataClainSrc) {
+                        console.log('Clicked element with data-clain-src:', dataClainSrc);
+
+                        // Send message to parent window (webview)
+                        window.parent.postMessage({
+                            type: 'clain-click',
+                            event: {
+                                x: e.clientX,
+                                y: e.clientY,
+                                tagName: e.target.tagName,
+                                id: e.target.id || undefined,
+                                className: e.target.className || undefined,
+                                textContent: e.target.textContent?.substring(0, 100) || undefined,
+                                timestamp: Date.now(),
+                                dataClainSrc: dataClainSrc
+                            }
+                        }, '*');
+
+                        // Prevent default action for clicks with data-clain-src
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                }, true); // Use capture phase to catch clicks before any other handlers
+            })();
+        \``;
     }
 
     private getPlaceholderHtml(state: ConnectionState, errorMessage?: string): string {
