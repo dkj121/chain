@@ -5,11 +5,13 @@ import { IframeContentProvider } from './iframeContentProvider';
 import { ClickHandler, ClickEvent } from './clickHandler';
 import { ProjectDiscovery } from './projectDiscovery';
 import { PropertiesPanel } from './propertiesPanel';
+import { HotReloadWatcher } from './hotReloadWatcher';
 import * as path from 'path';
 
 let kestrelManager: KestrelManager;
 let webviewManager: WebviewManager;
 let clickHandler: ClickHandler;
+let hotReloadWatcher: HotReloadWatcher | undefined;
 
 class WebviewMessageHandler implements MessageHandler {
     constructor(private clickHandler: ClickHandler) {}
@@ -105,6 +107,9 @@ export function activate(context: vscode.ExtensionContext) {
             const messageHandler = new WebviewMessageHandler(clickHandler);
             webviewManager = new WebviewManager(new IframeContentProvider(), messageHandler);
 
+            // Set up hot reload watcher for .cshtml files
+            hotReloadWatcher = new HotReloadWatcher(webviewManager);
+
             // Create webview panel with connecting state
             webviewManager.createPanel(vscode.window, 'http://localhost:5000');
 
@@ -136,6 +141,10 @@ export function activate(context: vscode.ExtensionContext) {
     const stopPreviewCommand = vscode.commands.registerCommand('clain.stopPreview', () => {
         kestrelManager.stop();
         webviewManager.dispose();
+        if (hotReloadWatcher) {
+            hotReloadWatcher.dispose();
+            hotReloadWatcher = undefined;
+        }
         vscode.window.showInformationMessage('Clain: Preview stopped');
     });
 
@@ -172,5 +181,8 @@ export function deactivate() {
     }
     if (webviewManager) {
         webviewManager.dispose();
+    }
+    if (hotReloadWatcher) {
+        hotReloadWatcher.dispose();
     }
 }
