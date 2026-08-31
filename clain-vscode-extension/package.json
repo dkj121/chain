@@ -27,8 +27,30 @@
       {
         "command": "clain.refreshPreview",
         "title": "Clain: Refresh Preview"
+      },
+      {
+        "command": "clain.showProperties",
+        "title": "Clain: Show Properties"
       }
-    ]
+    ],
+    "views": {
+      "clain": [
+        {
+          "type": "webview",
+          "id": "clain.propertiesPanel",
+          "name": "Properties"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "clain",
+          "title": "Clain",
+          "icon": "$(preview)"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run compile",

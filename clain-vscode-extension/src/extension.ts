@@ -4,6 +4,7 @@ import { WebviewManager, MessageHandler } from './webviewManager';
 import { IframeContentProvider } from './iframeContentProvider';
 import { ClickHandler, ClickEvent } from './clickHandler';
 import { ProjectDiscovery } from './projectDiscovery';
+import { PropertiesPanel } from './propertiesPanel';
 import * as path from 'path';
 
 let kestrelManager: KestrelManager;
@@ -143,10 +144,23 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Preview refreshed');
     });
 
+    // Register Properties Panel
+    const propertiesPanel = new PropertiesPanel();
+    const propertiesPanelProvider = vscode.window.registerWebviewViewProvider(
+        PropertiesPanel.viewType,
+        propertiesPanel
+    );
+
+    const showPropertiesCommand = vscode.commands.registerCommand('clain.showProperties', () => {
+        vscode.commands.executeCommand('clain.propertiesPanel.focus');
+    });
+
     context.subscriptions.push(
         startPreviewCommand,
         stopPreviewCommand,
         refreshPreviewCommand,
+        propertiesPanelProvider,
+        showPropertiesCommand,
         kestrelManager,
         webviewManager
     );
