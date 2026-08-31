@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { SelectionStateManager, ElementSelection } from './selectionStateManager';
 
 /**
  * Provides the Properties Panel webview that displays element properties.
@@ -6,6 +7,8 @@ import * as vscode from 'vscode';
  */
 export class PropertiesPanel implements vscode.WebviewViewProvider {
     public static readonly viewType = 'clain.propertiesPanel';
+    private webviewView?: vscode.WebviewView;
+    private selectionManager = SelectionStateManager.getInstance();
 
     constructor() {}
 
@@ -18,12 +21,50 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
         context: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken
     ): void | Thenable<void> {
+        this.webviewView = webviewView;
+
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: []
         };
 
         webviewView.webview.html = this.getHtmlContent(webviewView.webview);
+
+        // Listen for selection changes
+        this.selectionManager.onSelectionChange((selection) => {
+            this.updateProperties(selection);
+        });
+
+        // Handle messages from webview
+        webviewView.webview.onDidReceiveMessage((message) => {
+            this.handleMessage(message);
+        });
+    }
+
+    /**
+     * Update the properties panel with element data.
+     */
+    private updateProperties(selection: ElementSelection | null): void {
+        if (!this.webviewView) {
+            return;
+        }
+
+        this.webviewView.webview.postMessage({
+            type: 'updateProperties',
+            selection: selection
+        });
+    }
+
+    /**
+     * Handle messages from the webview.
+     */
+    private handleMessage(message: any): void {
+        switch (message.type) {
+            case 'attributeChanged':
+                // TODO: Apply attribute changes back to the file
+                console.log('Attribute changed:', message.attribute, message.value);
+                break;
+        }
     }
 
     /**
