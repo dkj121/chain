@@ -1,27 +1,33 @@
-import * as vscode from 'vscode';
-
 export interface IWebviewRefreshable {
     refresh(): void;
     showLoadingIndicator?(): void;
     hideLoadingIndicator?(): void;
 }
 
+export interface IDisposable {
+    dispose(): void;
+}
+
+export interface IUri {
+    fsPath: string;
+}
+
 export interface IFileSystemWatcher {
-    onDidChange(listener: (uri: vscode.Uri) => void): vscode.Disposable;
-    onDidCreate(listener: (uri: vscode.Uri) => void): vscode.Disposable;
-    onDidDelete(listener: (uri: vscode.Uri) => void): vscode.Disposable;
+    onDidChange(listener: (uri: IUri) => void): IDisposable;
+    onDidCreate(listener: (uri: IUri) => void): IDisposable;
+    onDidDelete(listener: (uri: IUri) => void): IDisposable;
     dispose(): void;
 }
 
 /**
  * Watches .cshtml files for changes and triggers hot reload with debouncing.
  */
-export class HotReloadWatcher implements vscode.Disposable {
+export class HotReloadWatcher implements IDisposable {
     private fileWatcher: IFileSystemWatcher | undefined;
     private debounceTimer: NodeJS.Timeout | undefined;
     private disposed = false;
     private readonly debounceMs = 300;
-    private watchers: vscode.Disposable[] = [];
+    private watchers: IDisposable[] = [];
 
     constructor(
         private webviewManager: IWebviewRefreshable,
@@ -32,9 +38,17 @@ export class HotReloadWatcher implements vscode.Disposable {
 
     private setupFileWatcher(watcherFactory?: () => IFileSystemWatcher): void {
         // Use factory if provided (for testing), otherwise create real watcher
-        this.fileWatcher = watcherFactory
-            ? watcherFactory()
-            : vscode.workspace.createFileSystemWatcher('**/*.cshtml');
+        if (watcherFactory) {
+            this.fileWatcher = watcherFactory();
+        } else {
+            // Lazy load vscode only when actually needed (not in tests)
+            const vscode = require('vscode');
+            this.fileWatcher = vscode.workspace.createFileSystemWatcher('**/*.cshtml');
+        }
+
+        if (!this.fileWatcher) {
+            return;
+        }
 
         this.watchers.push(
             this.fileWatcher.onDidChange((uri) => this.handleFileChange(uri))
@@ -47,7 +61,7 @@ export class HotReloadWatcher implements vscode.Disposable {
         );
     }
 
-    private handleFileChange(uri: vscode.Uri): void {
+    private handleFileChange(uri: IUri): void {
         if (this.disposed) {
             return;
         }

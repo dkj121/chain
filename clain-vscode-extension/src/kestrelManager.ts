@@ -87,7 +87,21 @@ export class KestrelManager {
     public stop(): void {
         if (this.process) {
             this.outputChannel.append('\n[STOP] Terminating Kestrel process...\n');
-            this.process.kill();
+
+            // Force kill the process tree (SIGKILL on Unix, taskkill on Windows)
+            if (process.platform === 'win32') {
+                // On Windows, kill the entire process tree
+                child_process.execSync(`taskkill /pid ${this.process.pid} /T /F`, { stdio: 'ignore' });
+            } else {
+                // On Unix, send SIGTERM first, then SIGKILL if needed
+                this.process.kill('SIGTERM');
+                setTimeout(() => {
+                    if (this.process && !this.process.killed) {
+                        this.process.kill('SIGKILL');
+                    }
+                }, 2000);
+            }
+
             this.process = null;
             this.isReady = false;
         }

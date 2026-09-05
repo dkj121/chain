@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Hosting;
+using Clain.DesignTime.Common;
 
 namespace Clain.DesignTime
 {
@@ -11,11 +12,6 @@ namespace Clain.DesignTime
     [HtmlTargetElement("*")]
     public class ClainSourceTagHelper : TagHelper
     {
-        /// <summary>
-        /// Environment names in which source mapping attributes are emitted.
-        /// </summary>
-        public static readonly string[] DesignTimeEnvironments = { "Development", "ClainDesign" };
-
         private readonly IHostEnvironment? _hostEnvironment;
 
         public ClainSourceTagHelper(IHostEnvironment? hostEnvironment)
@@ -25,8 +21,8 @@ namespace Clain.DesignTime
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-#if DEBUG
-            if (!IsDesignTimeEnvironment())
+#if DEBUG || CLAIN_DESIGN
+            if (!EnvironmentDetection.IsDesignTimeEnvironment(_hostEnvironment?.EnvironmentName))
             {
                 return;
             }
@@ -41,22 +37,6 @@ namespace Clain.DesignTime
 #endif
         }
 
-        /// <summary>
-        /// Determines whether the current host environment is a design-time environment.
-        /// Returns false when no environment is available, so production hosts that do not
-        /// register IHostEnvironment never receive attributes.
-        /// </summary>
-        public bool IsDesignTimeEnvironment()
-        {
-            if (_hostEnvironment == null)
-            {
-                return false;
-            }
-
-            return DesignTimeEnvironments.Contains(
-                _hostEnvironment.EnvironmentName,
-                StringComparer.OrdinalIgnoreCase);
-        }
 
         /// <summary>
         /// Extracts source span information from Razor compiler context

@@ -3,7 +3,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
-namespace Clain.DesignTime.Tests
+using Clain.DesignTime.Common;
+
+namespace Clain.DesignTime.Tests.TagHelper
 {
     public class EnvironmentGatingTests
     {
@@ -62,17 +64,13 @@ namespace Clain.DesignTime.Tests
         [Fact]
         public void IsDesignTimeEnvironment_ReturnsFalse_ForProduction()
         {
-            var tagHelper = CreateTagHelper("Production");
-
-            Assert.False(tagHelper.IsDesignTimeEnvironment());
+            Assert.False(EnvironmentDetection.IsDesignTimeEnvironment("Production"));
         }
 
         [Fact]
         public void IsDesignTimeEnvironment_ReturnsTrue_ForClainDesign()
         {
-            var tagHelper = CreateTagHelper("ClainDesign");
-
-            Assert.True(tagHelper.IsDesignTimeEnvironment());
+            Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("ClainDesign"));
         }
 
         private static ClainSourceTagHelper CreateTagHelper(string environmentName)

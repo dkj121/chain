@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Xunit;
 
-namespace Clain.DesignTime.Tests
+using Clain.DesignTime.Common;
+
+namespace Clain.DesignTime.Tests.Common
 {
     public class SourceSpanInfoTests
     {

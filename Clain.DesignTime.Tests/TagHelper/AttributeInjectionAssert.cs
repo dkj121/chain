@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Xunit;
 
-namespace Clain.DesignTime.Tests
+namespace Clain.DesignTime.Tests.TagHelper
 {
     /// <summary>
     /// Assertions for the data-clain-src attribute.

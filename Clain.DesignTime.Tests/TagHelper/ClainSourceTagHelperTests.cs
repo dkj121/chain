@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Clain.DesignTime.Common;
 using Xunit;
 
-namespace Clain.DesignTime.Tests
+namespace Clain.DesignTime.Tests.TagHelper
 {
     public class ClainSourceTagHelperTests
     {

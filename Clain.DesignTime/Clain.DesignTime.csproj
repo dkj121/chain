@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.11" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Clain.DesignTime.Shared\Clain.DesignTime.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
