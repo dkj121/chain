@@ -6,15 +6,22 @@ import { ClickHandler, ClickEvent } from './clickHandler';
 import { ProjectDiscovery } from './projectDiscovery';
 import { PropertiesPanel } from './propertiesPanel';
 import { HotReloadWatcher } from './hotReloadWatcher';
+import { RazorAstParser } from './razorAstParser';
+import { BreadcrumbProvider } from './breadcrumbProvider';
 import * as path from 'path';
 
 let kestrelManager: KestrelManager;
 let webviewManager: WebviewManager;
 let clickHandler: ClickHandler;
 let hotReloadWatcher: HotReloadWatcher | undefined;
+let razorParser: RazorAstParser;
+let breadcrumbProvider: BreadcrumbProvider;
 
 class WebviewMessageHandler implements MessageHandler {
-    constructor(private clickHandler: ClickHandler) {}
+    constructor(
+        private clickHandler: ClickHandler,
+        private breadcrumbProvider?: BreadcrumbProvider
+    ) {}
 
     handleMessage(message: any): void {
         if (message.type === 'click' && message.event) {
@@ -29,6 +36,9 @@ class WebviewMessageHandler implements MessageHandler {
                 dataClainSrc: message.event.dataClainSrc
             };
             this.clickHandler.handleClick(clickEvent);
+        } else if (message.type === 'breadcrumbClick' && this.breadcrumbProvider) {
+            // Handle breadcrumb level click
+            this.breadcrumbProvider.selectBreadcrumbLevel(message.index);
         }
     }
 }
@@ -103,8 +113,26 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.Position
             );
 
+            // Initialize Razor AST parser and breadcrumb provider
+            razorParser = new RazorAstParser();
+            breadcrumbProvider = new BreadcrumbProvider(razorParser);
+
+            // Wire up breadcrumb updates to webview
+            breadcrumbProvider.onBreadcrumbUpdate((breadcrumb) => {
+                if (webviewManager) {
+                    webviewManager.postMessage({
+                        type: 'updateBreadcrumb',
+                        breadcrumb: breadcrumb.map((node, index) => ({
+                            label: breadcrumbProvider.formatNode(node),
+                            kind: node.kind,
+                            index: index
+                        }))
+                    });
+                }
+            });
+
             // Create webview manager with message handler
-            const messageHandler = new WebviewMessageHandler(clickHandler);
+            const messageHandler = new WebviewMessageHandler(clickHandler, breadcrumbProvider);
             webviewManager = new WebviewManager(new IframeContentProvider(), messageHandler);
 
             // Set up hot reload watcher for .cshtml files
@@ -184,5 +212,11 @@ export function deactivate() {
     }
     if (hotReloadWatcher) {
         hotReloadWatcher.dispose();
+    }
+    if (razorParser) {
+        razorParser.dispose();
+    }
+    if (breadcrumbProvider) {
+        breadcrumbProvider.dispose();
     }
 }

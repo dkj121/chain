@@ -74,6 +74,48 @@ export class IframeContentProvider implements WebviewContent {
             font-size: 12px;
         }
 
+        .breadcrumb-bar {
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--vscode-panel-border);
+            background-color: var(--vscode-editor-background);
+            display: none;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .breadcrumb-bar.active {
+            display: flex;
+        }
+
+        .breadcrumb-item {
+            color: var(--vscode-textLink-foreground);
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 2px;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item:hover {
+            background-color: var(--vscode-list-hoverBackground);
+        }
+
+        .breadcrumb-item.collapsed {
+            color: var(--vscode-descriptionForeground);
+            cursor: default;
+        }
+
+        .breadcrumb-item.collapsed:hover {
+            background-color: transparent;
+        }
+
+        .breadcrumb-separator {
+            color: var(--vscode-descriptionForeground);
+            user-select: none;
+        }
+
         .preview-container {
             flex: 1;
             position: relative;
@@ -117,6 +159,10 @@ export class IframeContentProvider implements WebviewContent {
         <span class="status-text">${statusMessage}</span>
     </div>
 
+    <div id="breadcrumb-bar" class="breadcrumb-bar">
+        <!-- Breadcrumb items will be injected here -->
+    </div>
+
     <div class="preview-container">
         ${iframeHtml}
         ${info.state !== 'connected' ? this.getPlaceholderHtml(info.state, info.errorMessage) : ''}
@@ -157,6 +203,58 @@ export class IframeContentProvider implements WebviewContent {
                     });
                 }
             });
+
+            // Listen for messages from extension (breadcrumb updates)
+            window.addEventListener('message', function(event) {
+                const message = event.data;
+                if (message.type === 'updateBreadcrumb') {
+                    updateBreadcrumb(message.breadcrumb);
+                }
+            });
+
+            // HTML escape function to prevent XSS
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+            // Update breadcrumb UI
+            function updateBreadcrumb(breadcrumb) {
+                const breadcrumbBar = document.getElementById('breadcrumb-bar');
+                if (!breadcrumb || breadcrumb.length === 0) {
+                    breadcrumbBar.classList.remove('active');
+                    breadcrumbBar.innerHTML = '';
+                    return;
+                }
+
+                breadcrumbBar.classList.add('active');
+                breadcrumbBar.innerHTML = breadcrumb.map((item, index) => {
+                    const isCollapsed = item.kind === 'Collapsed';
+                    const itemClass = isCollapsed ? 'breadcrumb-item collapsed' : 'breadcrumb-item';
+                    const separator = index < breadcrumb.length - 1
+                        ? '<span class="breadcrumb-separator">›</span>'
+                        : '';
+
+                    return \`<span class="\${itemClass}" data-index="\${index}">\${escapeHtml(item.label)}</span>\${separator}\`;
+                }).join('');
+
+                // Add click handlers
+                const items = breadcrumbBar.querySelectorAll('.breadcrumb-item:not(.collapsed)');
+                items.forEach((item) => {
+                    item.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        vscode.postMessage({
+                            type: 'breadcrumbClick',
+                            index: index
+                        });
+                    });
+                });
+            }
         })();
     </script>
 </body>

@@ -70,6 +70,12 @@ export class WebviewManager {
         }
     }
 
+    public postMessage(message: any): void {
+        if (this.panel && this.panel.webview) {
+            this.panel.webview.postMessage(message);
+        }
+    }
+
     public getConnectionState(): ConnectionState {
         return this.connectionState;
     }
