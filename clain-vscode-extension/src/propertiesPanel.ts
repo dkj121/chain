@@ -44,15 +44,50 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
     /**
      * Update the properties panel with element data.
      */
-    private updateProperties(selection: ElementSelection | null): void {
+    private async updateProperties(selection: ElementSelection | null): Promise<void> {
         if (!this.webviewView) {
             return;
         }
 
+        let codeContext = null;
+        if (selection) {
+            codeContext = await this.extractCodeContext(selection);
+        }
+
         this.webviewView.webview.postMessage({
             type: 'updateProperties',
-            selection: selection
+            selection: selection,
+            codeContext: codeContext
         });
+    }
+
+    /**
+     * Extract 5-10 lines of code context around the selected element.
+     */
+    private async extractCodeContext(selection: ElementSelection): Promise<{ code: string; startLine: number; endLine: number } | null> {
+        try {
+            const document = await vscode.workspace.openTextDocument(selection.filePath);
+            const totalLines = document.lineCount;
+
+            // Extract 5 lines before and 5 lines after (10 lines total, centered on selection)
+            const contextLines = 5;
+            const startLine = Math.max(0, selection.line - contextLines);
+            const endLine = Math.min(totalLines - 1, selection.line + contextLines);
+
+            const lines: string[] = [];
+            for (let i = startLine; i <= endLine; i++) {
+                lines.push(document.lineAt(i).text);
+            }
+
+            return {
+                code: lines.join('\n'),
+                startLine: startLine,
+                endLine: endLine
+            };
+        } catch (error) {
+            console.error('Failed to extract code context:', error);
+            return null;
+        }
     }
 
     /**
@@ -63,6 +98,31 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
             case 'attributeChanged':
                 await this.applyAttributeChange(message);
                 break;
+            case 'codeChanged':
+                await this.applyCodeChange(message);
+                break;
+        }
+    }
+
+    /**
+     * Apply code changes from Monaco editor to the source file.
+     */
+    private async applyCodeChange(message: any): Promise<void> {
+        const { code, startLine, endLine, selection } = message;
+
+        if (!selection || !selection.filePath) {
+            return;
+        }
+
+        try {
+            const document = await vscode.workspace.openTextDocument(selection.filePath);
+            const edit = new vscode.WorkspaceEdit();
+            const range = new vscode.Range(startLine, 0, endLine, document.lineAt(endLine).text.length);
+            edit.replace(document.uri, range, code);
+            await vscode.workspace.applyEdit(edit);
+        } catch (error) {
+            console.error('Failed to apply code change:', error);
+            vscode.window.showErrorMessage('Failed to apply code changes');
         }
     }
 
@@ -178,7 +238,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'unsafe-inline' https://cdn.jsdelivr.net; worker-src blob:; font-src ${webview.cspSource} https://cdn.jsdelivr.net;">
     <title>Properties Panel</title>
     <style>
         * {
@@ -273,6 +333,25 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
         .element-info span {
             color: var(--vscode-descriptionForeground);
         }
+
+        .code-preview-section {
+            margin-top: 24px;
+            border-top: 1px solid var(--vscode-panel-border);
+            padding-top: 16px;
+        }
+
+        .code-preview-section h3 {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--vscode-foreground);
+        }
+
+        #monacoEditor {
+            height: 200px;
+            border: 1px solid var(--vscode-input-border);
+            border-radius: 2px;
+        }
     </style>
 </head>
 <body>
@@ -327,22 +406,47 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
             <input type="text" id="elementId" placeholder="e.g., main-content">
             <small>Unique element identifier</small>
         </div>
+
+        <div class="code-preview-section">
+            <h3>Code Preview</h3>
+            <div id="monacoEditor"></div>
+        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
     <script>
         const vscode = acquireVsCodeApi();
         let debounceTimers = {};
         let currentSelection = null;
+        let currentCodeContext = null;
+        let monacoEditor = null;
+        let monacoLoaded = false;
+
+        // Load Monaco Editor
+        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            monacoLoaded = true;
+            monaco.editor.defineTheme('vscodeDark', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [],
+                colors: {
+                    'editor.background': '#1e1e1e',
+                }
+            });
+            monaco.editor.setTheme('vscodeDark');
+        });
 
         window.addEventListener('message', event => {
             const message = event.data;
             if (message.type === 'updateProperties') {
-                updatePropertiesUI(message.selection);
+                updatePropertiesUI(message.selection, message.codeContext);
             }
         });
 
-        function updatePropertiesUI(selection) {
+        function updatePropertiesUI(selection, codeContext) {
             currentSelection = selection;
+            currentCodeContext = codeContext;
             const placeholder = document.getElementById('placeholder');
             const form = document.getElementById('propertiesForm');
 
@@ -369,6 +473,61 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
                 classInput.value = selection.attributes.class || '';
                 idInput.value = selection.attributes.id || '';
             }
+
+            // Update Monaco editor
+            if (codeContext && monacoLoaded) {
+                updateMonacoEditor(codeContext);
+            }
+        }
+
+        function updateMonacoEditor(codeContext) {
+            const editorContainer = document.getElementById('monacoEditor');
+
+            if (!monacoEditor && monaco) {
+                monacoEditor = monaco.editor.create(editorContainer, {
+                    value: codeContext.code,
+                    language: 'razor',
+                    theme: 'vscodeDark',
+                    minimap: { enabled: false },
+                    lineNumbers: 'on',
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true,
+                    fontSize: 13,
+                    tabSize: 4
+                });
+
+                // Handle content changes
+                monacoEditor.onDidChangeModelContent(() => {
+                    handleCodeChange();
+                });
+            } else if (monacoEditor) {
+                monacoEditor.setValue(codeContext.code);
+            }
+
+            // Scroll to center the selected line
+            if (monacoEditor && currentSelection) {
+                const selectedLineInEditor = currentSelection.line - codeContext.startLine + 1;
+                monacoEditor.revealLineInCenter(selectedLineInEditor);
+            }
+        }
+
+        function handleCodeChange() {
+            if (!monacoEditor || !currentCodeContext) return;
+
+            if (debounceTimers.code) {
+                clearTimeout(debounceTimers.code);
+            }
+
+            debounceTimers.code = setTimeout(() => {
+                const newCode = monacoEditor.getValue();
+                vscode.postMessage({
+                    type: 'codeChanged',
+                    code: newCode,
+                    startLine: currentCodeContext.startLine,
+                    endLine: currentCodeContext.endLine,
+                    selection: currentSelection
+                });
+            }, 300);
         }
 
         function handleAttributeChange(attributeName, value) {
