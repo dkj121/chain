@@ -1,5 +1,23 @@
 import * as vscode from 'vscode';
 import { SelectionStateManager, ElementSelection } from './selectionStateManager';
+import * as path from 'path';
+
+interface CodeChangedMessage {
+    type: 'codeChanged';
+    code: string;
+    startLine: number;
+    endLine: number;
+    selection: ElementSelection;
+}
+
+interface AttributeChangedMessage {
+    type: 'attributeChanged';
+    attribute: string;
+    value: string;
+    selection: ElementSelection;
+}
+
+type WebviewMessage = CodeChangedMessage | AttributeChangedMessage;
 
 /**
  * Provides the Properties Panel webview that displays element properties.
@@ -9,6 +27,8 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
     public static readonly viewType = 'clain.propertiesPanel';
     private webviewView?: vscode.WebviewView;
     private selectionManager = SelectionStateManager.getInstance();
+    private currentSelection: ElementSelection | null = null;
+    private currentCodeContext: { startLine: number; endLine: number } | null = null;
 
     constructor() {}
 
@@ -49,9 +69,15 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
             return;
         }
 
+        // Track current selection for validation
+        this.currentSelection = selection;
+
         let codeContext = null;
         if (selection) {
             codeContext = await this.extractCodeContext(selection);
+            this.currentCodeContext = codeContext ? { startLine: codeContext.startLine, endLine: codeContext.endLine } : null;
+        } else {
+            this.currentCodeContext = null;
         }
 
         this.webviewView.webview.postMessage({
@@ -94,28 +120,106 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
      * Handle messages from the webview.
      */
     private async handleMessage(message: any): Promise<void> {
+        // Validate message structure
+        if (!message || typeof message.type !== 'string') {
+            console.error('Invalid message format');
+            return;
+        }
+
         switch (message.type) {
             case 'attributeChanged':
-                await this.applyAttributeChange(message);
+                if (this.isAttributeChangedMessage(message)) {
+                    await this.applyAttributeChange(message);
+                }
                 break;
             case 'codeChanged':
-                await this.applyCodeChange(message);
+                if (this.isCodeChangedMessage(message)) {
+                    await this.applyCodeChange(message);
+                }
                 break;
         }
     }
 
     /**
+     * Type guard for AttributeChangedMessage.
+     */
+    private isAttributeChangedMessage(message: any): message is AttributeChangedMessage {
+        return typeof message.attribute === 'string' &&
+               typeof message.value === 'string' &&
+               message.selection &&
+               typeof message.selection.filePath === 'string';
+    }
+
+    /**
+     * Type guard for CodeChangedMessage.
+     */
+    private isCodeChangedMessage(message: any): message is CodeChangedMessage {
+        return typeof message.code === 'string' &&
+               typeof message.startLine === 'number' &&
+               typeof message.endLine === 'number' &&
+               message.selection &&
+               typeof message.selection.filePath === 'string';
+    }
+
+    /**
      * Apply code changes from Monaco editor to the source file.
      */
-    private async applyCodeChange(message: any): Promise<void> {
+    private async applyCodeChange(message: CodeChangedMessage): Promise<void> {
         const { code, startLine, endLine, selection } = message;
 
-        if (!selection || !selection.filePath) {
+        // Security validation: Ensure this matches the current tracked selection
+        if (!this.currentSelection ||
+            !this.currentCodeContext ||
+            selection.filePath !== this.currentSelection.filePath ||
+            selection.line !== this.currentSelection.line ||
+            selection.character !== this.currentSelection.character) {
+            console.error('Code change rejected: selection mismatch');
+            vscode.window.showErrorMessage('Cannot apply changes: selection has changed');
+            return;
+        }
+
+        // Validate line numbers
+        if (startLine < 0 || endLine < startLine ||
+            startLine !== this.currentCodeContext.startLine ||
+            endLine !== this.currentCodeContext.endLine) {
+            console.error('Code change rejected: invalid line range');
+            vscode.window.showErrorMessage('Cannot apply changes: invalid line range');
+            return;
+        }
+
+        // Validate code size (max 50KB)
+        if (code.length > 50000) {
+            console.error('Code change rejected: content too large');
+            vscode.window.showErrorMessage('Cannot apply changes: content exceeds size limit');
+            return;
+        }
+
+        // Validate file path is within workspace
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(selection.filePath));
+        if (!workspaceFolder) {
+            console.error('Code change rejected: file not in workspace');
+            vscode.window.showErrorMessage('Cannot apply changes: file is not in workspace');
+            return;
+        }
+
+        // Validate file path doesn't contain path traversal
+        const normalizedPath = path.normalize(selection.filePath);
+        if (normalizedPath.includes('..') || !normalizedPath.startsWith(workspaceFolder.uri.fsPath)) {
+            console.error('Code change rejected: invalid file path');
+            vscode.window.showErrorMessage('Cannot apply changes: invalid file path');
             return;
         }
 
         try {
             const document = await vscode.workspace.openTextDocument(selection.filePath);
+
+            // Final validation: ensure line numbers are within document bounds
+            if (endLine >= document.lineCount) {
+                console.error('Code change rejected: line number out of bounds');
+                vscode.window.showErrorMessage('Cannot apply changes: line number out of bounds');
+                return;
+            }
+
             const edit = new vscode.WorkspaceEdit();
             const range = new vscode.Range(startLine, 0, endLine, document.lineAt(endLine).text.length);
             edit.replace(document.uri, range, code);
