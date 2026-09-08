@@ -25,12 +25,18 @@ type WebviewMessage = CodeChangedMessage | AttributeChangedMessage;
  */
 export class PropertiesPanel implements vscode.WebviewViewProvider {
     public static readonly viewType = 'clain.propertiesPanel';
+    private static readonly MAX_CODE_SIZE = 50000; // 50KB limit for code edits
+    private static readonly MONACO_VERSION = '0.44.0';
+
     private webviewView?: vscode.WebviewView;
     private selectionManager = SelectionStateManager.getInstance();
     private currentSelection: ElementSelection | null = null;
     private currentCodeContext: { startLine: number; endLine: number } | null = null;
+    private logger: vscode.OutputChannel;
 
-    constructor() {}
+    constructor() {
+        this.logger = vscode.window.createOutputChannel('Clain - Properties Panel');
+    }
 
     /**
      * Called when the webview view is first created or restored.
@@ -111,7 +117,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
                 endLine: endLine
             };
         } catch (error) {
-            console.error('Failed to extract code context:', error);
+            this.logger.appendLine(`Failed to extract code context: ${error}`);
             return null;
         }
     }
@@ -122,7 +128,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
     private async handleMessage(message: any): Promise<void> {
         // Validate message structure
         if (!message || typeof message.type !== 'string') {
-            console.error('Invalid message format');
+            this.logger.appendLine('Invalid message format');
             return;
         }
 
@@ -173,7 +179,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
             selection.filePath !== this.currentSelection.filePath ||
             selection.line !== this.currentSelection.line ||
             selection.character !== this.currentSelection.character) {
-            console.error('Code change rejected: selection mismatch');
+            this.logger.appendLine('Code change rejected: selection mismatch');
             vscode.window.showErrorMessage('Cannot apply changes: selection has changed');
             return;
         }
@@ -182,14 +188,14 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
         if (startLine < 0 || endLine < startLine ||
             startLine !== this.currentCodeContext.startLine ||
             endLine !== this.currentCodeContext.endLine) {
-            console.error('Code change rejected: invalid line range');
+            this.logger.appendLine('Code change rejected: invalid line range');
             vscode.window.showErrorMessage('Cannot apply changes: invalid line range');
             return;
         }
 
         // Validate code size (max 50KB)
-        if (code.length > 50000) {
-            console.error('Code change rejected: content too large');
+        if (code.length > PropertiesPanel.MAX_CODE_SIZE) {
+            this.logger.appendLine(`Code change rejected: content too large (${code.length} bytes)`);
             vscode.window.showErrorMessage('Cannot apply changes: content exceeds size limit');
             return;
         }
@@ -197,7 +203,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
         // Validate file path is within workspace
         const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(selection.filePath));
         if (!workspaceFolder) {
-            console.error('Code change rejected: file not in workspace');
+            this.logger.appendLine('Code change rejected: file not in workspace');
             vscode.window.showErrorMessage('Cannot apply changes: file is not in workspace');
             return;
         }
@@ -205,7 +211,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
         // Validate file path doesn't contain path traversal
         const normalizedPath = path.normalize(selection.filePath);
         if (normalizedPath.includes('..') || !normalizedPath.startsWith(workspaceFolder.uri.fsPath)) {
-            console.error('Code change rejected: invalid file path');
+            this.logger.appendLine('Code change rejected: invalid file path');
             vscode.window.showErrorMessage('Cannot apply changes: invalid file path');
             return;
         }
@@ -215,7 +221,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
 
             // Final validation: ensure line numbers are within document bounds
             if (endLine >= document.lineCount) {
-                console.error('Code change rejected: line number out of bounds');
+                this.logger.appendLine('Code change rejected: line number out of bounds');
                 vscode.window.showErrorMessage('Cannot apply changes: line number out of bounds');
                 return;
             }
@@ -225,7 +231,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
             edit.replace(document.uri, range, code);
             await vscode.workspace.applyEdit(edit);
         } catch (error) {
-            console.error('Failed to apply code change:', error);
+            this.logger.appendLine(`Failed to apply code change: ${error}`);
             vscode.window.showErrorMessage('Failed to apply code changes');
         }
     }
@@ -233,7 +239,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
     /**
      * Apply attribute changes to the source file.
      */
-    private async applyAttributeChange(message: any): Promise<void> {
+    private async applyAttributeChange(message: AttributeChangedMessage): Promise<void> {
         const { attribute, value, selection } = message;
 
         if (!selection || !selection.filePath) {
@@ -280,7 +286,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
                 await vscode.workspace.applyEdit(edit);
             }
         } catch (error) {
-            console.error('Failed to apply attribute change:', error);
+            this.logger.appendLine(`Failed to apply attribute change: ${error}`);
         }
     }
 
@@ -337,6 +343,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
      * Generates the HTML content for the properties panel.
      */
     private getHtmlContent(webview: vscode.Webview): string {
+        const monacoVersion = PropertiesPanel.MONACO_VERSION;
         return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -456,6 +463,15 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
             border: 1px solid var(--vscode-input-border);
             border-radius: 2px;
         }
+
+        .monaco-error {
+            padding: 12px;
+            background-color: var(--vscode-inputValidation-errorBackground);
+            border: 1px solid var(--vscode-inputValidation-errorBorder);
+            color: var(--vscode-inputValidation-errorForeground);
+            border-radius: 2px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -514,10 +530,11 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
         <div class="code-preview-section">
             <h3>Code Preview</h3>
             <div id="monacoEditor"></div>
+            <div id="monacoError" class="monaco-error" style="display: none;"></div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@${monacoVersion}/min/vs/loader.js"></script>
     <script>
         const vscode = acquireVsCodeApi();
         let debounceTimers = {};
@@ -526,8 +543,8 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
         let monacoEditor = null;
         let monacoLoaded = false;
 
-        // Load Monaco Editor
-        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' } });
+        // Load Monaco Editor with error handling
+        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@${monacoVersion}/min/vs' } });
         require(['vs/editor/editor.main'], function () {
             monacoLoaded = true;
             monaco.editor.defineTheme('vscodeDark', {
@@ -539,6 +556,17 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
                 }
             });
             monaco.editor.setTheme('vscodeDark');
+        }, function(err) {
+            // Handle Monaco load failure
+            const errorDiv = document.getElementById('monacoError');
+            errorDiv.textContent = 'Failed to load code editor: ' + (err.message || 'Unknown error');
+            errorDiv.style.display = 'block';
+            document.getElementById('monacoEditor').style.display = 'none';
+
+            vscode.postMessage({
+                type: 'monacoLoadFailed',
+                error: err.message || 'Unknown error'
+            });
         });
 
         window.addEventListener('message', event => {
