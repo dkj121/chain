@@ -14,16 +14,6 @@ Scan project structure to discover pages, components, and design patterns. Popul
 
 **Use when:** After `clain:init`, when project structure changes significantly, or user runs "Clain Analyze Codebase" command.
 
-### `clain:generate-mock-data`
-Generate semantic mock data from ViewModel definitions to enable design-time preview without a running backend. Analyzes ViewModel classes and creates realistic mock values based on property names and types.
-
-**Use when:** User runs "Clain Generate Mock Data" command or needs to preview UI without backend dependencies.
-
-### `clain:data-switch`
-Toggle between mock data and real backend data modes during design-time preview. Updates `mock-data.json` globalSettings to switch data sources without modifying application code.
-
-**Use when:** User runs "Clain Data Switch" command or needs to switch between design mode and live data validation.
-
 ### `clain:style-consolidation`
 Consolidate scattered inline styles and utility classes into semantic, maintainable CSS structure. Extracts repeated patterns, creates CSS classes, and refactors markup following project conventions.
 
@@ -35,9 +25,7 @@ The typical workflow for using these skills:
 
 1. **Initialize**: `clain:init` — Set up project structure and design philosophy
 2. **Analyze**: `clain:analyze-codebase` — Discover existing pages and components
-3. **Generate Data**: `clain:generate-mock-data` — Create mock ViewModels for preview
-4. **Switch Modes**: `clain:data-switch` — Toggle between mock/backend as needed
-5. **Consolidate**: `clain:style-consolidation` — Clean up styles after AI editing
+3. **Consolidate**: `clain:style-consolidation` — Clean up styles after AI editing
 
 ## Integration with VS Code Extension
 
@@ -67,8 +55,6 @@ clain/
 ├── README.md                    # This file
 ├── init.md                      # Project initialization skill
 ├── analyze-codebase.md          # Codebase analysis skill
-├── generate-mock-data.md        # Mock data generation skill
-├── data-switch.md               # Data mode switching skill
 └── style-consolidation.md       # Style cleanup skill
 ```
 
