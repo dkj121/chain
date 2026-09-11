@@ -31,6 +31,26 @@
       {
         "command": "clain.showProperties",
         "title": "Clain: Show Properties"
+      },
+      {
+        "command": "clain.initProject",
+        "title": "Clain: Init Project"
+      },
+      {
+        "command": "clain.analyzeCodebase",
+        "title": "Clain: Analyze Codebase"
+      },
+      {
+        "command": "clain.generateMockData",
+        "title": "Clain: Generate Mock Data"
+      },
+      {
+        "command": "clain.dataSwitch",
+        "title": "Clain: Data Switch"
+      },
+      {
+        "command": "clain.consolidateStyles",
+        "title": "Clain: Consolidate Styles"
       }
     ],
     "views": {

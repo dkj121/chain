@@ -192,12 +192,43 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand('clain.propertiesPanel.focus');
     });
 
+    // Clain Skills Commands
+    const initProjectCommand = vscode.commands.registerCommand('clain.initProject', async () => {
+        vscode.window.showInformationMessage('Clain: Init Project - Implementation pending');
+        // TODO: Load and execute .clain/docs/init.md skill
+    });
+
+    const analyzeCodebaseCommand = vscode.commands.registerCommand('clain.analyzeCodebase', async () => {
+        vscode.window.showInformationMessage('Clain: Analyze Codebase - Implementation pending');
+        // TODO: Load and execute .clain/docs/analyze-codebase.md skill
+    });
+
+    const generateMockDataCommand = vscode.commands.registerCommand('clain.generateMockData', async () => {
+        vscode.window.showInformationMessage('Clain: Generate Mock Data - Implementation pending');
+        // TODO: Load and execute .clain/docs/generate-mock-data.md skill
+    });
+
+    const dataSwitchCommand = vscode.commands.registerCommand('clain.dataSwitch', async () => {
+        vscode.window.showInformationMessage('Clain: Data Switch - Implementation pending');
+        // TODO: Load and execute .clain/docs/data-switch.md skill
+    });
+
+    const consolidateStylesCommand = vscode.commands.registerCommand('clain.consolidateStyles', async () => {
+        vscode.window.showInformationMessage('Clain: Consolidate Styles - Implementation pending');
+        // TODO: Load and execute .clain/docs/style-consolidation.md skill
+    });
+
     context.subscriptions.push(
         startPreviewCommand,
         stopPreviewCommand,
         refreshPreviewCommand,
         propertiesPanelProvider,
         showPropertiesCommand,
+        initProjectCommand,
+        analyzeCodebaseCommand,
+        generateMockDataCommand,
+        dataSwitchCommand,
+        consolidateStylesCommand,
         kestrelManager,
         webviewManager
     );
