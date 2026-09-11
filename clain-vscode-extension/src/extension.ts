@@ -44,10 +44,9 @@ class WebviewMessageHandler implements MessageHandler {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Clain extension is now active');
-
     const outputChannel = vscode.window.createOutputChannel('Clain - Kestrel');
     const clickOutputChannel = vscode.window.createOutputChannel('Clain - Clicks');
+    outputChannel.appendLine('Clain extension is now active');
     kestrelManager = new KestrelManager(outputChannel);
 
     const startPreviewCommand = vscode.commands.registerCommand('clain.startPreview', async () => {

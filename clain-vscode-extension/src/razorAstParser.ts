@@ -16,14 +16,35 @@ export interface AncestryResult {
 }
 
 /**
+ * Represents a parsed Razor AST node structure.
+ */
+export interface RazorAstNode {
+    kind: string;
+    filePath?: string;
+    position?: {
+        line: number;
+        character: number;
+    };
+    span?: {
+        start: { line: number; character: number };
+        end: { line: number; character: number };
+    };
+    children?: RazorAstNode[];
+    content?: string;
+}
+
+/**
  * Parses Razor (.cshtml) files into AST and provides ancestry traversal.
  * Caches parsed results and invalidates on file changes.
  */
 export class RazorAstParser implements vscode.Disposable {
-    private astCache: Map<string, any> = new Map();
+    private astCache: Map<string, RazorAstNode> = new Map();
     private fileWatcher: vscode.FileSystemWatcher;
+    private logger: vscode.OutputChannel;
 
-    constructor() {
+    constructor(logger?: vscode.OutputChannel) {
+        this.logger = logger || vscode.window.createOutputChannel('Clain - Razor Parser');
+
         // Watch for .cshtml changes to invalidate cache
         this.fileWatcher = vscode.workspace.createFileSystemWatcher('**/*.cshtml');
         this.fileWatcher.onDidChange((uri) => this.invalidateCache(uri));
@@ -61,7 +82,7 @@ export class RazorAstParser implements vscode.Disposable {
                 ancestors
             };
         } catch (error) {
-            console.error('Error getting ancestry:', error);
+            this.logger.appendLine(`Error getting ancestry: ${error}`);
             return null;
         }
     }
@@ -69,7 +90,7 @@ export class RazorAstParser implements vscode.Disposable {
     /**
      * Parse a .cshtml file into AST using Roslyn Razor API.
      */
-    private async parseFile(filePath: string): Promise<any> {
+    private async parseFile(filePath: string): Promise<RazorAstNode> {
         // This will call a .NET tool that uses Roslyn Razor API
         // For now, return a mock structure until the .NET tool is built
         return {
@@ -83,22 +104,22 @@ export class RazorAstParser implements vscode.Disposable {
      * Find all ancestor nodes at a given position.
      */
     private findAncestorsAtPosition(
-        ast: any,
+        ast: RazorAstNode,
         line: number,
         character: number
     ): RazorNode[] {
         const ancestors: RazorNode[] = [];
 
         // Recursive traversal to find the node at position
-        const traverse = (node: any, path: RazorNode[]): boolean => {
+        const traverse = (node: RazorAstNode, path: RazorNode[]): boolean => {
             // Check if position is within this node's span
             if (this.containsPosition(node, line, character)) {
                 // Add this node to the path
                 const razorNode: RazorNode = {
                     kind: node.kind,
-                    filePath: node.filePath || ast.filePath,
-                    line: node.line || 0,
-                    character: node.character || 0,
+                    filePath: node.filePath || ast.filePath || '',
+                    line: node.position?.line || 0,
+                    character: node.position?.character || 0,
                     content: node.content
                 };
 
@@ -128,12 +149,15 @@ export class RazorAstParser implements vscode.Disposable {
     /**
      * Check if a node contains the given position.
      */
-    private containsPosition(node: any, line: number, character: number): boolean {
+    private containsPosition(node: RazorAstNode, line: number, character: number): boolean {
         if (!node.span) {
             return false;
         }
 
-        const { startLine, startCharacter, endLine, endCharacter } = node.span;
+        const startLine = node.span.start.line;
+        const startCharacter = node.span.start.character;
+        const endLine = node.span.end.line;
+        const endCharacter = node.span.end.character;
 
         // Position is after start
         const afterStart =

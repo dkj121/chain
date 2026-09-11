@@ -12,11 +12,13 @@ export class BreadcrumbProvider implements vscode.Disposable {
     private currentBreadcrumb: RazorNode[] = [];
     private onBreadcrumbUpdateEmitter = new vscode.EventEmitter<RazorNode[]>();
     private currentRequestId = 0;
+    private logger: vscode.OutputChannel;
 
     public readonly onBreadcrumbUpdate = this.onBreadcrumbUpdateEmitter.event;
 
-    constructor(razorParser: RazorAstParser) {
+    constructor(razorParser: RazorAstParser, logger?: vscode.OutputChannel) {
         this.razorParser = razorParser;
+        this.logger = logger || vscode.window.createOutputChannel('Clain - Breadcrumb');
         this.selectionManager = SelectionStateManager.getInstance();
 
         // Listen for selection changes
@@ -54,7 +56,7 @@ export class BreadcrumbProvider implements vscode.Disposable {
         } catch (error) {
             // Only report error if this is still the latest request
             if (requestId === this.currentRequestId) {
-                console.error('Error updating breadcrumb:', error);
+                this.logger.appendLine(`Error updating breadcrumb: ${error}`);
                 vscode.window.showErrorMessage('Failed to update breadcrumb navigation');
             }
         }
@@ -202,7 +204,7 @@ export class BreadcrumbProvider implements vscode.Disposable {
             editor.selection = new vscode.Selection(position, position);
             editor.revealRange(new vscode.Range(position, position));
         } catch (error) {
-            console.error('Error navigating to position:', error);
+            this.logger.appendLine(`Error navigating to position: ${error}`);
         }
     }
 

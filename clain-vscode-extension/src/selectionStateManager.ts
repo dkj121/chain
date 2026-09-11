@@ -20,8 +20,11 @@ export class SelectionStateManager {
     private static instance: SelectionStateManager;
     private currentSelection: ElementSelection | null = null;
     private listeners: SelectionChangeListener[] = [];
+    private logger: vscode.OutputChannel;
 
-    private constructor() {}
+    private constructor() {
+        this.logger = vscode.window.createOutputChannel('Clain - Selection');
+    }
 
     public static getInstance(): SelectionStateManager {
         if (!SelectionStateManager.instance) {
@@ -78,7 +81,7 @@ export class SelectionStateManager {
             try {
                 listener(this.currentSelection);
             } catch (error) {
-                console.error('Error in selection change listener:', error);
+                this.logger.appendLine(`Error in selection change listener: ${error}`);
             }
         }
     }

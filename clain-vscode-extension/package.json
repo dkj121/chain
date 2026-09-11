@@ -11,7 +11,12 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:clain.startPreview"
+    "onCommand:clain.startPreview",
+    "onCommand:clain.initProject",
+    "onCommand:clain.analyzeCodebase",
+    "onCommand:clain.generateMockData",
+    "onCommand:clain.dataSwitch",
+    "onCommand:clain.consolidateStyles"
   ],
   "main": "./out/extension.js",
   "contributes": {
