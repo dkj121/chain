@@ -1,0 +1,68 @@
+@model TestRazorApp.Models.ProductListViewModel
+@{
+    ViewData["Title"] = Model.PageTitle;
+}
+
+<partial name="_Header" />
+
+<div class="container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div class="page-header" style="margin-bottom: 32px;">
+        <h1 style="font-size: 2rem; margin-bottom: 8px;">@Model.PageTitle</h1>
+        <p style="color: #666;">Showing @Model.TotalProducts products</p>
+    </div>
+
+    <div class="category-filter" style="margin-bottom: 24px;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px;">Categories:</h3>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            @foreach (var category in Model.Categories)
+            {
+                <span class="category-badge" style="padding: 6px 12px; background: #eff6ff; color: #1e40af; border-radius: 16px; font-size: 0.875rem;">
+                    @category
+                </span>
+            }
+        </div>
+    </div>
+
+    <div class="products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+        @foreach (var product in Model.Products)
+        {
+            <partial name="_Card" model="product" />
+        }
+    </div>
+
+    <div class="nested-conditional-example" style="margin-top: 40px; padding: 20px; background: #f9fafb; border-radius: 8px;">
+        <h3 style="margin-bottom: 16px;">Stock Summary by Category</h3>
+        @foreach (var category in Model.Categories)
+        {
+            var categoryProducts = Model.Products.Where(p => p.Category == category).ToList();
+            <div class="category-summary" style="margin-bottom: 16px;">
+                <h4 style="color: #2563eb; margin-bottom: 8px;">@category</h4>
+                @if (categoryProducts.Any())
+                {
+                    <ul style="list-style: none; padding-left: 20px;">
+                        @foreach (var product in categoryProducts)
+                        {
+                            <li style="padding: 4px 0;">
+                                @product.Name -
+                                @if (product.InStock)
+                                {
+                                    <span style="color: #16a34a;">In Stock (@product.StockQuantity)</span>
+                                }
+                                else
+                                {
+                                    <span style="color: #dc2626;">Out of Stock</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p style="color: #888; font-style: italic;">No products in this category</p>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<partial name="_Footer" />

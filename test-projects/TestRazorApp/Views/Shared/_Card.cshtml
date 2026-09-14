@@ -1,0 +1,24 @@
+@model TestRazorApp.Models.Product
+
+<div class="card" data-clain-src="Views/Shared/_Card.cshtml" style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 8px;">
+    <h3 class="card-title" style="margin: 0 0 8px 0;">@Model.Name</h3>
+    <p class="card-description" style="color: #666; margin: 0 0 12px 0;">@Model.Description</p>
+    <div class="card-price" style="font-size: 1.25rem; font-weight: bold; color: #2563eb;">
+        $@Model.Price.ToString("F2")
+    </div>
+    <div class="card-category" style="margin-top: 8px; font-size: 0.875rem; color: #888;">
+        Category: @Model.Category
+    </div>
+    @if (Model.InStock)
+    {
+        <div class="card-stock in-stock" style="margin-top: 8px; color: #16a34a;">
+            ✓ In Stock (@Model.StockQuantity available)
+        </div>
+    }
+    else
+    {
+        <div class="card-stock out-of-stock" style="margin-top: 8px; color: #dc2626;">
+            ✗ Out of Stock
+        </div>
+    }
+</div>

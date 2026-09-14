@@ -1,0 +1,42 @@
+﻿@model TestRazorApp.Models.HomeViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<partial name="_Header" />
+
+<div class="container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div class="hero-section" style="text-align: center; padding: 40px 0;">
+        <h1 class="title" data-clain-src="Views/Home/Index.cshtml:8" style="font-size: 2.5rem; margin-bottom: 16px;">
+            @Model.Title
+        </h1>
+        <p class="welcome-message" style="font-size: 1.25rem; color: #666; margin-bottom: 32px;">
+            @Model.WelcomeMessage
+        </p>
+    </div>
+
+    <div class="features-section" style="margin-top: 40px;">
+        <h2 style="text-align: center; margin-bottom: 24px;">Features</h2>
+        <ul class="features-list" style="max-width: 600px; margin: 0 auto;">
+            @foreach (var feature in Model.Features)
+            {
+                <li class="feature-item" style="padding: 12px 0; border-bottom: 1px solid #eee;">
+                    @feature
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div class="stats-section" style="margin-top: 60px; text-align: center; padding: 40px; background: #f9fafb; border-radius: 8px;">
+        <div class="stat-card">
+            <div class="stat-value" style="font-size: 3rem; font-weight: bold; color: #2563eb;">
+                @Model.VisitorCount
+            </div>
+            <div class="stat-label" style="font-size: 1rem; color: #888; margin-top: 8px;">
+                Total Visitors
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_Footer" />
