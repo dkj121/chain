@@ -17,7 +17,14 @@ interface AttributeChangedMessage {
     selection: ElementSelection;
 }
 
-type WebviewMessage = CodeChangedMessage | AttributeChangedMessage;
+interface StyleChangedMessage {
+    type: 'styleChanged';
+    property: string;
+    value: string;
+    selection: ElementSelection;
+}
+
+type WebviewMessage = CodeChangedMessage | AttributeChangedMessage | StyleChangedMessage;
 
 /**
  * Provides the Properties Panel webview that displays element properties.
@@ -143,6 +150,14 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
                     await this.applyCodeChange(message);
                 }
                 break;
+            case 'styleChanged':
+                if (this.isStyleChangedMessage(message)) {
+                    await this.applyStyleChange(message);
+                }
+                break;
+            case 'runStyleConsolidation':
+                await this.runStyleConsolidation(message.filePath);
+                break;
         }
     }
 
@@ -168,8 +183,196 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
     }
 
     /**
-     * Apply code changes from Monaco editor to the source file.
+     * Type guard for StyleChangedMessage.
      */
+    private isStyleChangedMessage(message: any): message is StyleChangedMessage {
+        return typeof message.property === 'string' &&
+               typeof message.value === 'string' &&
+               message.selection &&
+               typeof message.selection.filePath === 'string';
+    }
+
+    /**
+     * Apply style changes to the source file by injecting/modifying inline style attribute.
+     */
+    private async applyStyleChange(message: StyleChangedMessage): Promise<void> {
+        const { property, value, selection } = message;
+
+        if (!selection || !selection.filePath) {
+            return;
+        }
+
+        // Security validation: Ensure this matches the current tracked selection
+        if (!this.currentSelection ||
+            selection.filePath !== this.currentSelection.filePath ||
+            selection.line !== this.currentSelection.line ||
+            selection.character !== this.currentSelection.character) {
+            this.logger.appendLine('Style change rejected: selection mismatch');
+            vscode.window.showErrorMessage('Cannot apply style: selection has changed');
+            return;
+        }
+
+        // Validate CSS property name (prevent injection)
+        if (!/^[a-z-]+$/i.test(property)) {
+            this.logger.appendLine(`Style change rejected: invalid property name "${property}"`);
+            vscode.window.showErrorMessage('Invalid CSS property name');
+            return;
+        }
+
+        // Validate file path is within workspace
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(selection.filePath));
+        if (!workspaceFolder) {
+            this.logger.appendLine('Style change rejected: file not in workspace');
+            vscode.window.showErrorMessage('Cannot apply style: file is not in workspace');
+            return;
+        }
+
+        try {
+            const document = await vscode.workspace.openTextDocument(selection.filePath);
+            const line = selection.line;
+            const lineText = document.lineAt(line).text;
+
+            // Inject or modify style attribute
+            const newLineText = this.injectStyleAttribute(lineText, property, value);
+
+            if (newLineText !== lineText) {
+                const edit = new vscode.WorkspaceEdit();
+                const range = new vscode.Range(line, 0, line, lineText.length);
+                edit.replace(document.uri, range, newLineText);
+                await vscode.workspace.applyEdit(edit);
+
+                // Update inline style count after applying edit
+                await this.updateInlineStyleCount(selection.filePath);
+            }
+        } catch (error) {
+            this.logger.appendLine(`Failed to apply style change: ${error}`);
+            vscode.window.showErrorMessage('Failed to apply style changes');
+        }
+    }
+
+    /**
+     * Inject or modify a CSS property in the style attribute of an HTML line.
+     */
+    private injectStyleAttribute(lineText: string, property: string, value: string): string {
+        const tagMatch = lineText.match(/<(\w+)([^>]*)>/);
+        if (!tagMatch) {
+            return lineText;
+        }
+
+        const tagName = tagMatch[1];
+        const attributesSection = tagMatch[2];
+
+        // Check if style attribute exists
+        const styleRegex = /style="([^"]*)"/i;
+        const styleMatch = attributesSection.match(styleRegex);
+
+        let newStyleValue = '';
+        if (styleMatch) {
+            // Parse existing styles
+            const existingStyles = styleMatch[1];
+            const styleMap = this.parseStyleString(existingStyles);
+
+            if (value.trim() === '') {
+                // Remove property if value is empty
+                delete styleMap[property];
+            } else {
+                // Update property
+                styleMap[property] = value;
+            }
+
+            newStyleValue = Object.entries(styleMap)
+                .map(([k, v]) => `${k}: ${v}`)
+                .join('; ');
+        } else {
+            // No existing style attribute, create new one
+            if (value.trim() !== '') {
+                newStyleValue = `${property}: ${value}`;
+            }
+        }
+
+        let newAttributesSection = attributesSection;
+        if (styleMatch) {
+            // Replace existing style
+            if (newStyleValue === '') {
+                // Remove empty style attribute
+                newAttributesSection = attributesSection.replace(styleRegex, '').replace(/\s+/g, ' ').trim();
+            } else {
+                newAttributesSection = attributesSection.replace(styleRegex, `style="${newStyleValue}"`);
+            }
+        } else {
+            // Add new style attribute
+            if (newStyleValue !== '') {
+                newAttributesSection = attributesSection + ` style="${newStyleValue}"`;
+            }
+        }
+
+        return lineText.replace(tagMatch[0], `<${tagName}${newAttributesSection}>`);
+    }
+
+    /**
+     * Parse a style attribute string into a key-value map.
+     */
+    private parseStyleString(styleStr: string): Record<string, string> {
+        const styleMap: Record<string, string> = {};
+        const declarations = styleStr.split(';').map(s => s.trim()).filter(s => s);
+
+        for (const decl of declarations) {
+            const colonIndex = decl.indexOf(':');
+            if (colonIndex > 0) {
+                const property = decl.substring(0, colonIndex).trim();
+                const value = decl.substring(colonIndex + 1).trim();
+                styleMap[property] = value;
+            }
+        }
+
+        return styleMap;
+    }
+
+    /**
+     * Count inline style attributes in a file and notify webview.
+     */
+    private async updateInlineStyleCount(filePath: string): Promise<void> {
+        try {
+            const document = await vscode.workspace.openTextDocument(filePath);
+            const text = document.getText();
+
+            // Count occurrences of style="..."
+            const styleMatches = text.match(/style="[^"]*"/gi);
+            const count = styleMatches ? styleMatches.length : 0;
+
+            if (this.webviewView) {
+                this.webviewView.webview.postMessage({
+                    type: 'updateInlineStyleCount',
+                    count: count,
+                    filePath: filePath
+                });
+            }
+        } catch (error) {
+            this.logger.appendLine(`Failed to count inline styles: ${error}`);
+        }
+    }
+
+    /**
+     * Run style consolidation via Claude Code skill.
+     */
+    private async runStyleConsolidation(filePath: string): Promise<void> {
+        try {
+            // Open the file in the editor
+            const document = await vscode.workspace.openTextDocument(filePath);
+            await vscode.window.showTextDocument(document);
+
+            // Show information message
+            vscode.window.showInformationMessage(
+                'Style consolidation will be implemented in Issue #21. Use Claude Code chat to manually trigger clain:style-consolidation skill.'
+            );
+
+            this.logger.appendLine(`Style consolidation requested for ${filePath}`);
+        } catch (error) {
+            this.logger.appendLine(`Failed to run style consolidation: ${error}`);
+            vscode.window.showErrorMessage('Failed to run style consolidation');
+        }
+    }
+
     private async applyCodeChange(message: CodeChangedMessage): Promise<void> {
         const { code, startLine, endLine, selection } = message;
 
@@ -472,6 +675,91 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
             border-radius: 2px;
             font-size: 12px;
         }
+
+        .quick-styles-section {
+            margin-top: 24px;
+            border-top: 1px solid var(--vscode-panel-border);
+            padding-top: 16px;
+        }
+
+        .quick-styles-section h3 {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--vscode-foreground);
+        }
+
+        .style-category {
+            margin-bottom: 16px;
+        }
+
+        .style-category-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--vscode-descriptionForeground);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .quick-button {
+            padding: 4px 10px;
+            background: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+            border: 1px solid var(--vscode-button-border);
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: background 0.15s ease;
+        }
+
+        .quick-button:hover {
+            background: var(--vscode-button-secondaryHoverBackground);
+        }
+
+        .quick-button:active {
+            transform: translateY(1px);
+        }
+
+        .inline-style-warning {
+            margin-top: 12px;
+            padding: 10px;
+            background-color: var(--vscode-inputValidation-warningBackground);
+            border: 1px solid var(--vscode-inputValidation-warningBorder);
+            color: var(--vscode-inputValidation-warningForeground);
+            border-radius: 3px;
+            font-size: 11px;
+            display: none;
+        }
+
+        .inline-style-warning.show {
+            display: block;
+        }
+
+        .inline-style-warning strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .inline-style-warning button {
+            margin-top: 8px;
+            padding: 4px 12px;
+            background: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .inline-style-warning button:hover {
+            background: var(--vscode-button-hoverBackground);
+        }
     </style>
 </head>
 <body>
@@ -527,6 +815,58 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
             <small>Unique element identifier</small>
         </div>
 
+        <div class="quick-styles-section">
+            <h3>Quick Styles</h3>
+
+            <div class="style-category">
+                <span class="style-category-label">Display</span>
+                <div class="quick-buttons">
+                    <button class="quick-button" data-property="display" data-value="block">Block</button>
+                    <button class="quick-button" data-property="display" data-value="inline-block">Inline Block</button>
+                    <button class="quick-button" data-property="display" data-value="flex">Flex</button>
+                    <button class="quick-button" data-property="display" data-value="grid">Grid</button>
+                    <button class="quick-button" data-property="display" data-value="none">None</button>
+                </div>
+            </div>
+
+            <div class="style-category">
+                <span class="style-category-label">Text Align</span>
+                <div class="quick-buttons">
+                    <button class="quick-button" data-property="text-align" data-value="left">Left</button>
+                    <button class="quick-button" data-property="text-align" data-value="center">Center</button>
+                    <button class="quick-button" data-property="text-align" data-value="right">Right</button>
+                    <button class="quick-button" data-property="text-align" data-value="justify">Justify</button>
+                </div>
+            </div>
+
+            <div class="style-category">
+                <span class="style-category-label">Font Weight</span>
+                <div class="quick-buttons">
+                    <button class="quick-button" data-property="font-weight" data-value="normal">Normal</button>
+                    <button class="quick-button" data-property="font-weight" data-value="bold">Bold</button>
+                    <button class="quick-button" data-property="font-weight" data-value="600">Semi-Bold</button>
+                    <button class="quick-button" data-property="font-weight" data-value="300">Light</button>
+                </div>
+            </div>
+
+            <div class="style-category">
+                <span class="style-category-label">Spacing</span>
+                <div class="quick-buttons">
+                    <button class="quick-button" data-property="margin" data-value="0">No Margin</button>
+                    <button class="quick-button" data-property="margin" data-value="8px">Margin 8px</button>
+                    <button class="quick-button" data-property="margin" data-value="16px">Margin 16px</button>
+                    <button class="quick-button" data-property="padding" data-value="8px">Padding 8px</button>
+                    <button class="quick-button" data-property="padding" data-value="16px">Padding 16px</button>
+                </div>
+            </div>
+
+            <div class="inline-style-warning" id="inlineStyleWarning">
+                <strong>⚠️ Inline Styles Detected</strong>
+                <p><span id="inlineStyleCount">0</span> inline style(s) in this file. Consider consolidating to CSS classes.</p>
+                <button id="consolidateButton">Run Style Consolidation</button>
+            </div>
+        </div>
+
         <div class="code-preview-section">
             <h3>Code Preview</h3>
             <div id="monacoEditor"></div>
@@ -573,6 +913,8 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
             const message = event.data;
             if (message.type === 'updateProperties') {
                 updatePropertiesUI(message.selection, message.codeContext);
+            } else if (message.type === 'updateInlineStyleCount') {
+                updateInlineStyleWarning(message.count);
             }
         });
 
@@ -690,6 +1032,57 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
         document.getElementById('elementId').addEventListener('input', (e) => {
             handleAttributeChange('id', e.target.value);
         });
+
+        // Quick style buttons
+        document.querySelectorAll('.quick-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const property = e.target.getAttribute('data-property');
+                const value = e.target.getAttribute('data-value');
+                handleStyleChange(property, value);
+            });
+        });
+
+        // Style consolidation button
+        document.getElementById('consolidateButton').addEventListener('click', () => {
+            vscode.postMessage({
+                type: 'runStyleConsolidation',
+                filePath: currentSelection?.filePath
+            });
+        });
+
+        function handleStyleChange(property, value) {
+            if (!currentSelection) {
+                return;
+            }
+
+            // Clear debounce timer
+            if (debounceTimers.style) {
+                clearTimeout(debounceTimers.style);
+            }
+
+            // Debounce to avoid too many messages
+            debounceTimers.style = setTimeout(() => {
+                vscode.postMessage({
+                    type: 'styleChanged',
+                    property: property,
+                    value: value,
+                    selection: currentSelection
+                });
+            }, 300);
+        }
+
+        function updateInlineStyleWarning(count) {
+            const warning = document.getElementById('inlineStyleWarning');
+            const countSpan = document.getElementById('inlineStyleCount');
+
+            countSpan.textContent = count;
+
+            if (count > 3) {
+                warning.classList.add('show');
+            } else {
+                warning.classList.remove('show');
+            }
+        }
     </script>
 </body>
 </html>`;
