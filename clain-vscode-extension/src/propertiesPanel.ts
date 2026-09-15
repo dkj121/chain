@@ -253,6 +253,18 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
     /**
      * Inject or modify a CSS property in the style attribute of an HTML line.
      */
+    /**
+     * Escape HTML attribute values to prevent XSS.
+     * Escapes double quotes, ampersands, less-than, and greater-than.
+     */
+    private escapeHtmlAttribute(value: string): string {
+        return value
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
     private injectStyleAttribute(lineText: string, property: string, value: string): string {
         const tagMatch = lineText.match(/<(\w+)([^>]*)>/);
         if (!tagMatch) {
@@ -280,13 +292,15 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
                 styleMap[property] = value;
             }
 
+            // Security: Escape all values before building style string
             newStyleValue = Object.entries(styleMap)
-                .map(([k, v]) => `${k}: ${v}`)
+                .map(([k, v]) => `${k}: ${this.escapeHtmlAttribute(v)}`)
                 .join('; ');
         } else {
             // No existing style attribute, create new one
             if (value.trim() !== '') {
-                newStyleValue = `${property}: ${value}`;
+                // Security: Escape value before creating style attribute
+                newStyleValue = `${property}: ${this.escapeHtmlAttribute(value)}`;
             }
         }
 
