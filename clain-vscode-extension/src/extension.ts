@@ -8,6 +8,11 @@ import { PropertiesPanel } from './propertiesPanel';
 import { HotReloadWatcher } from './hotReloadWatcher';
 import { RazorAstParser } from './razorAstParser';
 import { BreadcrumbProvider } from './breadcrumbProvider';
+import { ToolboxPanel } from './toolboxPanel';
+import { RazorCodeInserter } from './razorCodeInserter';
+import { DropZoneHandler } from './dropZoneHandler';
+import { DropEventHandler } from './dropEventHandler';
+import { SelectionStateManager } from './selectionStateManager';
 import * as path from 'path';
 
 let kestrelManager: KestrelManager;
@@ -16,11 +21,14 @@ let clickHandler: ClickHandler;
 let hotReloadWatcher: HotReloadWatcher | undefined;
 let razorParser: RazorAstParser;
 let breadcrumbProvider: BreadcrumbProvider;
+let toolboxPanel: ToolboxPanel | undefined;
+let dropEventHandler: DropEventHandler | undefined;
 
 class WebviewMessageHandler implements MessageHandler {
     constructor(
         private clickHandler: ClickHandler,
-        private breadcrumbProvider?: BreadcrumbProvider
+        private breadcrumbProvider?: BreadcrumbProvider,
+        private dropEventHandler?: DropEventHandler
     ) {}
 
     handleMessage(message: any): void {
@@ -39,7 +47,14 @@ class WebviewMessageHandler implements MessageHandler {
         } else if (message.type === 'breadcrumbClick' && this.breadcrumbProvider) {
             // Handle breadcrumb level click
             this.breadcrumbProvider.selectBreadcrumbLevel(message.index);
+        } else if (message.command === 'drop' && this.dropEventHandler) {
+            // Handle drop event from toolbox
+            this.dropEventHandler.handleMessage(message).catch(error => {
+                vscode.window.showErrorMessage(`Drop failed: ${error.message}`);
+            });
         }
+    }
+}
     }
 }
 
@@ -116,6 +131,17 @@ export function activate(context: vscode.ExtensionContext) {
             razorParser = new RazorAstParser();
             breadcrumbProvider = new BreadcrumbProvider(razorParser);
 
+            // Initialize Click-to-Inject components
+            const selectionManager = SelectionStateManager.getInstance();
+            const razorCodeInserter = new RazorCodeInserter();
+
+            // Get allowed components from ToolboxPanel
+            const toolboxPanelInstance = new ToolboxPanel(context.extensionUri, selectionManager);
+            const allowedComponents = (toolboxPanelInstance as any).getComponents();
+
+            const dropZoneHandler = new DropZoneHandler(razorCodeInserter, allowedComponents);
+            dropEventHandler = new DropEventHandler(dropZoneHandler, allowedComponents);
+
             // Wire up breadcrumb updates to webview
             breadcrumbProvider.onBreadcrumbUpdate((breadcrumb) => {
                 if (webviewManager) {
@@ -130,8 +156,8 @@ export function activate(context: vscode.ExtensionContext) {
                 }
             });
 
-            // Create webview manager with message handler
-            const messageHandler = new WebviewMessageHandler(clickHandler, breadcrumbProvider);
+            // Create webview manager with message handler (including drop handler)
+            const messageHandler = new WebviewMessageHandler(clickHandler, breadcrumbProvider, dropEventHandler);
             webviewManager = new WebviewManager(new IframeContentProvider(), messageHandler);
 
             // Set up hot reload watcher for .cshtml files
@@ -191,6 +217,15 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand('clain.propertiesPanel.focus');
     });
 
+    // Click-to-Inject: Show Toolbox Command
+    const showToolboxCommand = vscode.commands.registerCommand('clain.showToolbox', () => {
+        if (!toolboxPanel) {
+            const selectionManager = SelectionStateManager.getInstance();
+            toolboxPanel = new ToolboxPanel(context.extensionUri, selectionManager);
+        }
+        toolboxPanel.show();
+    });
+
     // Clain Skills Commands
     const initProjectCommand = vscode.commands.registerCommand('clain.initProject', async () => {
         vscode.window.showInformationMessage('Clain: Init Project - Implementation pending');
@@ -223,6 +258,7 @@ export function activate(context: vscode.ExtensionContext) {
         refreshPreviewCommand,
         propertiesPanelProvider,
         showPropertiesCommand,
+        showToolboxCommand,
         initProjectCommand,
         analyzeCodebaseCommand,
         generateMockDataCommand,
