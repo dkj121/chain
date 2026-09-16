@@ -251,9 +251,6 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
     }
 
     /**
-     * Inject or modify a CSS property in the style attribute of an HTML line.
-     */
-    /**
      * Escape HTML attribute values to prevent XSS.
      * Escapes double quotes, ampersands, less-than, and greater-than.
      */
@@ -265,6 +262,11 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
             .replace(/>/g, '&gt;');
     }
 
+    /**
+     * Inject or modify a CSS property in the style attribute of an HTML line.
+     * Creates a new style attribute if one does not exist, or updates existing styles.
+     * All CSS values are HTML-escaped to prevent XSS attacks.
+     */
     private injectStyleAttribute(lineText: string, property: string, value: string): string {
         const tagMatch = lineText.match(/<(\w+)([^>]*)>/);
         if (!tagMatch) {
