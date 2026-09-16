@@ -44,7 +44,7 @@ describe('DropEventHandler', () => {
             }
         });
 
-        it('Should parse data-clain-src format', () => {
+        it('Should parse data-chain-src format', () => {
             const targetSrc = '/path/to/file.cshtml:10:4';
 
             const parsed = (dropEventHandler as any).parseDataClainSrc(targetSrc);
@@ -54,12 +54,12 @@ describe('DropEventHandler', () => {
             assert.strictEqual(parsed.character, 4);
         });
 
-        it('Should reject invalid data-clain-src format', () => {
+        it('Should reject invalid data-chain-src format', () => {
             const invalidSrc = 'invalid-format';
 
             assert.throws(() => {
                 (dropEventHandler as any).parseDataClainSrc(invalidSrc);
-            }, /Invalid data-clain-src format/);
+            }, /Invalid data-chain-src format/);
         });
 
         it('Should find component by ID', () => {

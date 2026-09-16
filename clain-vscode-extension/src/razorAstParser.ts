@@ -43,7 +43,7 @@ export class RazorAstParser implements vscode.Disposable {
     private logger: vscode.OutputChannel;
 
     constructor(logger?: vscode.OutputChannel) {
-        this.logger = logger || vscode.window.createOutputChannel('Clain - Razor Parser');
+        this.logger = logger || vscode.window.createOutputChannel('Chain - Razor Parser');
 
         // Watch for .cshtml changes to invalidate cache
         this.fileWatcher = vscode.workspace.createFileSystemWatcher('**/*.cshtml');

@@ -37,7 +37,7 @@ export class ClickHandler {
         const info = this.formatClickInfo(event);
         this.outputChannel.appendLine(info);
 
-        // If data-clain-src is present, navigate to source
+        // If data-chain-src is present, navigate to source
         if (event.dataClainSrc) {
             try {
                 await this.navigator.handleClickEvent(event.dataClainSrc, this.workspaceRoot);

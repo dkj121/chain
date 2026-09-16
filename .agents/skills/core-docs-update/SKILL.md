@@ -50,7 +50,7 @@ If any check fails, regenerate this guidance with `/hello-my-skills:generate-pro
 
 **Project overview:**
 - `README.md` (root) - Project overview, quick start, basic usage
-- Module READMEs: `clain-vscode-extension/README.md`, `Clain.DesignTime.Blazor/README.md`, etc.
+- Module READMEs: `chain-vscode-extension/README.md`, `Chain.DesignTime.Blazor/README.md`, etc.
 
 **Technical documentation:**
 - `Docs/` directory - In-depth guides, API documentation, examples

@@ -7,7 +7,7 @@ suite('Preview Integration Tests', () => {
         this.timeout(30000); // Allow 30 seconds for Kestrel to start
 
         // Execute the start preview command
-        await vscode.commands.executeCommand('clain.startPreview');
+        await vscode.commands.executeCommand('chain.startPreview');
 
         // Wait for Kestrel to start and become ready
         await waitForCondition(async () => {
@@ -25,14 +25,14 @@ suite('Preview Integration Tests', () => {
         assert.ok(outputContent.includes('Now listening on:'), 'Server should be listening');
 
         // Clean up - stop the preview
-        await vscode.commands.executeCommand('clain.stopPreview');
+        await vscode.commands.executeCommand('chain.stopPreview');
     });
 
     test('Refresh preview updates webview content', async function() {
         this.timeout(30000);
 
         // Start preview
-        await vscode.commands.executeCommand('clain.startPreview');
+        await vscode.commands.executeCommand('chain.startPreview');
 
         // Wait for ready state
         await waitForCondition(async () => {
@@ -41,13 +41,13 @@ suite('Preview Integration Tests', () => {
         }, 25000, 'Kestrel failed to start');
 
         // Execute refresh command
-        await vscode.commands.executeCommand('clain.refreshPreview');
+        await vscode.commands.executeCommand('chain.refreshPreview');
 
         // Verify command executed without error
         // In a full integration test environment, we'd verify the iframe reloaded
 
         // Clean up
-        await vscode.commands.executeCommand('clain.stopPreview');
+        await vscode.commands.executeCommand('chain.stopPreview');
     });
 });
 

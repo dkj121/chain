@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Xunit;
 
-namespace Clain.DesignTime.Tests.TagHelper
+namespace Chain.DesignTime.Tests.TagHelper
 {
     /// <summary>
-    /// Assertions for the data-clain-src attribute.
+    /// Assertions for the data-chain-src attribute.
     ///
     /// Injection is a Debug-only feature: Release builds strip it via #if DEBUG. A test
     /// that asserts the attribute is present is therefore only meaningful under Debug,
@@ -13,7 +13,7 @@ namespace Clain.DesignTime.Tests.TagHelper
     /// </summary>
     internal static class AttributeInjectionAssert
     {
-        private const string AttributeName = "data-clain-src";
+        private const string AttributeName = "data-chain-src";
 
         /// <summary>
         /// Asserts the attribute was emitted — in Debug builds. In Release builds,

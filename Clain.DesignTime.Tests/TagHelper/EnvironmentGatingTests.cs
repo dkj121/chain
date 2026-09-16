@@ -3,9 +3,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
-using Clain.DesignTime.Common;
+using Chain.DesignTime.Common;
 
-namespace Clain.DesignTime.Tests.TagHelper
+namespace Chain.DesignTime.Tests.TagHelper
 {
     public class EnvironmentGatingTests
     {

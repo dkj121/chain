@@ -32,7 +32,7 @@ export class EditorNavigator {
     ) {}
 
     /**
-     * Parses a data-clain-src attribute in format: file:line:char
+     * Parses a data-chain-src attribute in format: file:line:char
      * @param srcAttribute The source location string (e.g., "Views/Home/Index.cshtml:10:5")
      * @returns Parsed SourceLocation object
      * @throws Error if format is invalid
@@ -99,8 +99,8 @@ export class EditorNavigator {
     }
 
     /**
-     * Handles a click event with a data-clain-src attribute
-     * @param srcAttribute The data-clain-src attribute value
+     * Handles a click event with a data-chain-src attribute
+     * @param srcAttribute The data-chain-src attribute value
      * @param workspaceRoot The workspace root path
      */
     public async handleClickEvent(srcAttribute: string, workspaceRoot: string): Promise<void> {

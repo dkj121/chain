@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Clain.DesignTime.Common;
+using Chain.DesignTime.Common;
 using Xunit;
 
-namespace Clain.DesignTime.Tests.TagHelper
+namespace Chain.DesignTime.Tests.TagHelper
 {
     public class ClainSourceTagHelperTests
     {
@@ -33,7 +33,7 @@ namespace Clain.DesignTime.Tests.TagHelper
             tagHelper.Process(context, output);
 
             // Assert
-            Assert.DoesNotContain(output.Attributes, attr => attr.Name == "data-clain-src");
+            Assert.DoesNotContain(output.Attributes, attr => attr.Name == "data-chain-src");
         }
 
         [Fact]

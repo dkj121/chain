@@ -23,7 +23,7 @@ export class SelectionStateManager {
     private logger: vscode.OutputChannel;
 
     private constructor() {
-        this.logger = vscode.window.createOutputChannel('Clain - Selection');
+        this.logger = vscode.window.createOutputChannel('Chain - Selection');
     }
 
     public static getInstance(): SelectionStateManager {

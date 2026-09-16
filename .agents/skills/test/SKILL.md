@@ -15,7 +15,7 @@ allowed-user-invocation: false
 **Facts used for staleness detection:**
 - Test command: `pnpm run test:unit` (TypeScript), `dotnet test` (C#)
 - Test framework: Mocha + ts-node (TypeScript), xUnit (C#)
-- Test locations: `clain-vscode-extension/src/test/unit/**/*.test.ts`, `Clain.DesignTime.Tests/**/*Tests.cs`
+- Test locations: `chain-vscode-extension/src/test/unit/**/*.test.ts`, `Chain.DesignTime.Tests/**/*Tests.cs`
 
 **Staleness check:** Before using this guidance, verify:
 1. Test command exists: `command -v pnpm >/dev/null 2>&1` and `command -v dotnet >/dev/null 2>&1`
@@ -39,19 +39,19 @@ If any check fails, regenerate this guidance with `/hello-my-skills:generate-pro
 **Run all tests:**
 ```bash
 # TypeScript tests
-cd clain-vscode-extension && pnpm run test:unit
+cd chain-vscode-extension && pnpm run test:unit
 
 # C# tests
 dotnet test
 
 # All tests (both)
-cd clain-vscode-extension && pnpm run test:unit && cd .. && dotnet test
+cd chain-vscode-extension && pnpm run test:unit && cd .. && dotnet test
 ```
 
 **Run single test file:**
 ```bash
 # TypeScript
-cd clain-vscode-extension && npx mocha --require ts-node/register src/test/unit/ComponentName.test.ts
+cd chain-vscode-extension && npx mocha --require ts-node/register src/test/unit/ComponentName.test.ts
 
 # C#
 dotnet test --filter "FullyQualifiedName~Namespace.TestClass"
@@ -59,21 +59,21 @@ dotnet test --filter "FullyQualifiedName~Namespace.TestClass"
 
 **Typecheck (TypeScript):**
 ```bash
-cd clain-vscode-extension && npx tsc --noEmit
+cd chain-vscode-extension && npx tsc --noEmit
 ```
 
 **Lint:** Not configured yet
 
 **Build:**
 ```bash
-cd clain-vscode-extension && pnpm run compile
+cd chain-vscode-extension && pnpm run compile
 ```
 
 ## Test locations
 
-- TypeScript unit tests: `clain-vscode-extension/src/test/unit/**/*.test.ts`
-- TypeScript integration tests: `clain-vscode-extension/src/test/integration/**/*.test.ts`
-- C# unit tests: `Clain.DesignTime.Tests/**/*Tests.cs`
+- TypeScript unit tests: `chain-vscode-extension/src/test/unit/**/*.test.ts`
+- TypeScript integration tests: `chain-vscode-extension/src/test/integration/**/*.test.ts`
+- C# unit tests: `Chain.DesignTime.Tests/**/*Tests.cs`
 - C# integration tests: `test-projects/TestRazorApp.IntegrationTests/**/*Tests.cs`
 
 ## Project test conventions

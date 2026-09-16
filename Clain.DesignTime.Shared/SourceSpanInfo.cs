@@ -1,4 +1,4 @@
-namespace Clain.DesignTime.Common
+namespace Chain.DesignTime.Common
 {
     /// <summary>
     /// Represents source location information extracted from Razor compiler.
@@ -22,7 +22,7 @@ namespace Clain.DesignTime.Common
         public int Character { get; set; }
 
         /// <summary>
-        /// Formats the source span as "file:line:char" for data-clain-src attribute
+        /// Formats the source span as "file:line:char" for data-chain-src attribute
         /// </summary>
         public override string ToString()
         {

@@ -1,9 +1,9 @@
 ---
-name: clain:analyze-codebase
-description: Scan ASP.NET Core project structure to discover pages, components, and design patterns. Use this skill after clain:init to populate design.json with actual project data, when project structure changes significantly, when the user runs "Clain Analyze Codebase" command, or before AI component generation to understand existing patterns. Detects CSS architecture, extracts design tokens, and cross-references component dependencies.
+name: chain:analyze-codebase
+description: Scan ASP.NET Core project structure to discover pages, components, and design patterns. Use this skill after chain:init to populate design.json with actual project data, when project structure changes significantly, when the user runs "Chain Analyze Codebase" command, or before AI component generation to understand existing patterns. Detects CSS architecture, extracts design tokens, and cross-references component dependencies.
 ---
 
-# Clain Codebase Analysis
+# Chain Codebase Analysis
 
 Scan an ASP.NET Core project to discover its structure, detect design patterns, and populate the design index with pages, components, and design tokens.
 
@@ -14,11 +14,11 @@ Scan an ASP.NET Core project to discover its structure, detect design patterns, 
 3. Cross-references component dependencies
 4. Detects CSS architecture (Tailwind, Bootstrap, custom, none)
 5. Extracts design tokens from stylesheets
-6. Updates `.clain/design.json` with findings
+6. Updates `.chain/design.json` with findings
 
 ## Prerequisites
 
-- `.clain/` directory structure exists (run `clain:init` first)
+- `.chain/` directory structure exists (run `chain:init` first)
 - Open workspace containing ASP.NET Core project
 - Project has `Views/` directory (MVC) or `Pages/` directory (Razor Pages)
 
@@ -158,7 +158,7 @@ Store extracted tokens in `design.json.designTokens`:
 
 ### 6. Update design.json
 
-Write complete structure to `.clain/design.json`:
+Write complete structure to `.chain/design.json`:
 
 ```json
 {
@@ -238,14 +238,14 @@ Show the user:
 
 Next steps:
 - Review design.json for accuracy
-- Run "Clain: Generate Mock Data" for design-time preview
-- Run "Clain: Start Preview" to begin visual editing
+- Run "Chain: Generate Mock Data" for design-time preview
+- Run "Chain: Start Preview" to begin visual editing
 ```
 
 ## Error Handling
 
 - **No Views/ or Pages/ directory**: Show error confirming this is an ASP.NET Core MVC/Razor Pages project
-- **design.json doesn't exist**: Show error asking user to run `clain:init` first
+- **design.json doesn't exist**: Show error asking user to run `chain:init` first
 - **Invalid design.json**: Back up existing file to `design.json.backup`, create new one, warn user
 - **No CSS files found**: Set `cssArchitecture: "none"`, continue with rest of analysis
 - **Cannot parse .cshtml**: Log warning with file path, skip that file, continue analysis

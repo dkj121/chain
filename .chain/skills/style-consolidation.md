@@ -1,25 +1,25 @@
 ---
-name: clain:style-consolidation
-description: Consolidate scattered inline styles and utility classes into semantic, maintainable CSS structure. Use this skill when AI generates CSS during visual editing, after multiple style changes have accumulated, when the user runs "Clain Consolidate Styles" command, or before committing changes to ensure clean, production-ready styles. Extracts repeated patterns, creates CSS classes, and refactors markup to use semantic class names.
+name: chain:style-consolidation
+description: Consolidate scattered inline styles and utility classes into semantic, maintainable CSS structure. Use this skill when AI generates CSS during visual editing, after multiple style changes have accumulated, when the user runs "Chain Consolidate Styles" command, or before committing changes to ensure clean, production-ready styles. Extracts repeated patterns, creates CSS classes, and refactors markup to use semantic class names.
 ---
 
 # Context
 
-**Importers/Callers:** VS Code extension command `clain.consolidateStyles`, invoked after AI editing sessions or from Command Palette. AI editing workflow in `clain-vscode-extension/src/aiEditingSession.ts` can automatically trigger this skill. Referenced in `.clain/docs/style-consolidation.md` documentation.
+**Importers/Callers:** VS Code extension command `chain.consolidateStyles`, invoked after AI editing sessions or from Command Palette. AI editing workflow in `chain-vscode-extension/src/aiEditingSession.ts` can automatically trigger this skill. Referenced in `.chain/docs/style-consolidation.md` documentation.
 
 **Affected API:** Reads `.cshtml` files and `wwwroot/css/*.css` files. Writes updated `.cshtml` markup and consolidated CSS classes to appropriate stylesheets. Reads `design.json` for `cssArchitecture` to determine consolidation strategy. Parses inline `style=""` attributes and generates semantic CSS class definitions.
 
 **Data Schema:** 
-- Reads `.clain/design.json.cssArchitecture`: string ("tailwind" | "bootstrap" | "custom" | "none")
+- Reads `.chain/design.json.cssArchitecture`: string ("tailwind" | "bootstrap" | "custom" | "none")
 - Modifies `.cshtml` files: replaces inline `style=""` attributes with semantic class names
 - Writes to `wwwroot/css/components.css` or project-appropriate stylesheet: new CSS class definitions
 - Input: `.cshtml` files with inline styles; Output: refactored markup + extracted CSS classes
 
-**User's instruction:** Build Claude Code skills for the five primary AI workflows: init, analyze-codebase, generate-mock-data, data-switch, and style-consolidation. Each skill should match the functional specification from the .clain/docs/ folder and enable the VS Code extension to invoke Claude for these operations.
+**User's instruction:** Build Claude Code skills for the five primary AI workflows: init, analyze-codebase, generate-mock-data, data-switch, and style-consolidation. Each skill should match the functional specification from the .chain/docs/ folder and enable the VS Code extension to invoke Claude for these operations.
 
 ---
 
-# Clain Style Consolidation
+# Chain Style Consolidation
 
 Consolidate scattered inline styles and utility classes generated during AI visual editing into semantic, maintainable CSS structure following project conventions.
 
@@ -34,7 +34,7 @@ Consolidate scattered inline styles and utility classes generated during AI visu
 
 ## Prerequisites
 
-- `.clain/design.json` exists with `cssArchitecture` set
+- `.chain/design.json` exists with `cssArchitecture` set
 - Project has editable CSS files in `wwwroot/css/`
 - AI has made visual edits that may include inline styles or utility classes
 
@@ -292,7 +292,7 @@ Files modified:
 
 ## Error Handling
 
-- **design.json missing**: Show error suggesting to run `clain:init` first
+- **design.json missing**: Show error suggesting to run `chain:init` first
 - **cssArchitecture not set**: Ask user which architecture to assume, update design.json
 - **Target stylesheet doesn't exist**: Create it, show warning about needing to reference it in _Layout.cshtml
 - **Cannot parse inline styles**: Log warning with element location, skip that element

@@ -1,6 +1,6 @@
-using Clain.DesignTime.Common;
+using Chain.DesignTime.Common;
 
-namespace Clain.DesignTime.Tests.Common;
+namespace Chain.DesignTime.Tests.Common;
 
 public class EnvironmentDetectionTests
 {

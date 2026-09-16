@@ -1,12 +1,12 @@
-# TestRazorApp - Clain Extension Test Application
+# TestRazorApp - Chain Extension Test Application
 
-This is a test ASP.NET Core Razor Pages application designed to verify all features of the Clain VS Code Extension.
+This is a test ASP.NET Core Razor Pages application designed to verify all features of the Chain VS Code Extension.
 
 ## Purpose
 
 This application provides comprehensive test coverage for:
 - Live preview with hot reload
-- Click-to-navigate source mapping (`data-clain-src` attributes)
+- Click-to-navigate source mapping (`data-chain-src` attributes)
 - Property panel editing
 - Breadcrumb navigation
 - Nested Razor conditionals and loops
@@ -32,7 +32,7 @@ This application provides comprehensive test coverage for:
 ## Test Coverage
 
 ### Click-to-Navigate Testing
-All major elements have `data-clain-src` attributes:
+All major elements have `data-chain-src` attributes:
 - Header navigation (`Views/Shared/_Header.cshtml`)
 - Product cards (`Views/Shared/_Card.cshtml`)
 - Footer (`Views/Shared/_Footer.cshtml`)
@@ -60,10 +60,10 @@ dotnet run
 
 The application will start on `http://localhost:5000` (or the port shown in console).
 
-## Using with Clain Extension
+## Using with Chain Extension
 
 1. Open this folder in VS Code
-2. Run command: **Clain: Start Preview**
+2. Run command: **Chain: Start Preview**
 3. Select `TestRazorApp.csproj` from the QuickPick
 4. The live preview panel will open
 5. Click any element to navigate to its source
@@ -72,7 +72,7 @@ The application will start on `http://localhost:5000` (or the port shown in cons
 ## Test Scenarios
 
 ### Scenario 1: Basic Click Navigation
-1. Click the "Clain Test App" header
+1. Click the "Chain Test App" header
 2. Verify navigation to `_Header.cshtml`
 
 ### Scenario 2: Nested Element Navigation
@@ -103,4 +103,4 @@ The application will start on `http://localhost:5000` (or the port shown in cons
 
 - All test data is hardcoded in the controller (no database)
 - Inline styles are intentional for testing visibility
-- `data-clain-src` attributes are added to all major UI elements
+- `data-chain-src` attributes are added to all major UI elements

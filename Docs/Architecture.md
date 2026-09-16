@@ -1,8 +1,8 @@
-# Clain Design-Time Source Mapping Architecture
+# Chain Design-Time Source Mapping Architecture
 
 ## Overview
 
-Clain provides click-to-source navigation for ASP.NET Core applications by injecting `data-clain-src` attributes into HTML elements at build/runtime. This enables the VS Code extension to map browser DOM elements back to their source code locations.
+Chain provides click-to-source navigation for ASP.NET Core applications by injecting `data-chain-src` attributes into HTML elements at build/runtime. This enables the VS Code extension to map browser DOM elements back to their source code locations.
 
 ## Architecture Goals
 
@@ -15,19 +15,19 @@ Clain provides click-to-source navigation for ASP.NET Core applications by injec
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Clain Ecosystem                          │
+│                    Chain Ecosystem                          │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌──────────────────┐         ┌─────────────────────────┐  │
 │  │  VS Code         │         │  Browser DevTools       │  │
-│  │  Extension       │◄────────┤  data-clain-src attrs   │  │
+│  │  Extension       │◄────────┤  data-chain-src attrs   │  │
 │  └──────────────────┘         └─────────────────────────┘  │
 │         │                                ▲                  │
 │         │ opens file                     │ injected at      │
 │         ▼                                │ build/runtime    │
 │  ┌──────────────────┐         ┌─────────────────────────┐  │
 │  │  Source Files    │         │  Rendered HTML          │  │
-│  │  .cshtml/.razor  │         │  <div data-clain-src=   │  │
+│  │  .cshtml/.razor  │         │  <div data-chain-src=   │  │
 │  └──────────────────┘         │   "file.razor:10:5">    │  │
 │                                └─────────────────────────┘  │
 │                                          ▲                  │
@@ -50,7 +50,7 @@ Clain provides click-to-source navigation for ASP.NET Core applications by injec
 
 ## Component Details
 
-### 1. Clain.DesignTime.Shared
+### 1. Chain.DesignTime.Shared
 **Purpose**: Common utilities shared between Tag Helper and Source Generator
 
 **Components**:
@@ -60,20 +60,20 @@ Clain provides click-to-source navigation for ASP.NET Core applications by injec
 
 **Target**: netstandard2.0 (universal compatibility)
 
-### 2. Clain.DesignTime (Tag Helper)
+### 2. Chain.DesignTime (Tag Helper)
 **Purpose**: Runtime attribute injection for Razor Pages/MVC
 
 **How it works**:
 1. Tag Helper runs during view rendering
 2. Checks `IHostEnvironment` for Development/ClainDesign
 3. Extracts source location from Razor compiler metadata
-4. Injects `data-clain-src` attribute into HTML output
+4. Injects `data-chain-src` attribute into HTML output
 
 **Conditional compilation**: `#if DEBUG || CLAIN_DESIGN`
 
 **Target**: .NET 10.0 (matches ASP.NET Core version)
 
-### 3. Clain.DesignTime.Blazor (Source Generator)
+### 3. Chain.DesignTime.Blazor (Source Generator)
 **Purpose**: Compile-time attribute injection for Blazor components
 
 **How it works**:
@@ -101,7 +101,7 @@ TagHelper.Process()
     ↓ (reads context)
 Extract source location
     ↓ (inject)
-<div data-clain-src="file.cshtml:10:5">
+<div data-chain-src="file.cshtml:10:5">
 ```
 
 ### Blazor (.razor)
@@ -114,16 +114,16 @@ Partial class with BuildRenderTree wrapper
     ↓ (compile)
 Component with injected attributes
     ↓ (render)
-<div data-clain-src="file.razor:10:5">
+<div data-chain-src="file.razor:10:5">
 ```
 
 ## Attribute Format
 
 ```
-data-clain-src="<normalized-path>:<line>:<character>"
+data-chain-src="<normalized-path>:<line>:<character>"
 ```
 
-**Example**: `data-clain-src="Components/Counter.razor:15:8"`
+**Example**: `data-chain-src="Components/Counter.razor:15:8"`
 
 - Path uses forward slashes (cross-platform)
 - Line and character are zero-based internally, formatted as-is
@@ -143,12 +143,12 @@ Attributes are only emitted in design-time environments:
 
 ## NuGet Package Strategy
 
-**Single package**: `Clain.DesignTime`
+**Single package**: `Chain.DesignTime`
 
 **Contents**:
-- Clain.DesignTime.dll (Tag Helper)
-- Clain.DesignTime.Blazor.dll (Source Generator)
-- Clain.DesignTime.Shared.dll (Shared utilities)
+- Chain.DesignTime.dll (Tag Helper)
+- Chain.DesignTime.Blazor.dll (Source Generator)
+- Chain.DesignTime.Shared.dll (Shared utilities)
 
 **Automatic detection**: User chooses mode in project settings, then system detects file types:
 - `.cshtml` files → Tag Helper

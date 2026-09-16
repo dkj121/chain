@@ -155,7 +155,7 @@ describe('Click-to-Inject Integration', () => {
     });
 
     describe('Data Format Compatibility', () => {
-        it('Should parse data-clain-src format correctly', () => {
+        it('Should parse data-chain-src format correctly', () => {
             const message = {
                 command: 'drop',
                 componentId: 'html-button',

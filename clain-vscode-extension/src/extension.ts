@@ -57,12 +57,12 @@ class WebviewMessageHandler implements MessageHandler {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    const outputChannel = vscode.window.createOutputChannel('Clain - Kestrel');
-    const clickOutputChannel = vscode.window.createOutputChannel('Clain - Clicks');
-    outputChannel.appendLine('Clain extension is now active');
+    const outputChannel = vscode.window.createOutputChannel('Chain - Kestrel');
+    const clickOutputChannel = vscode.window.createOutputChannel('Chain - Clicks');
+    outputChannel.appendLine('Chain extension is now active');
     kestrelManager = new KestrelManager(outputChannel);
 
-    const startPreviewCommand = vscode.commands.registerCommand('clain.startPreview', async () => {
+    const startPreviewCommand = vscode.commands.registerCommand('chain.startPreview', async () => {
         try {
             // Find workspace folder
             const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -189,17 +189,17 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    const stopPreviewCommand = vscode.commands.registerCommand('clain.stopPreview', () => {
+    const stopPreviewCommand = vscode.commands.registerCommand('chain.stopPreview', () => {
         kestrelManager.stop();
         webviewManager.dispose();
         if (hotReloadWatcher) {
             hotReloadWatcher.dispose();
             hotReloadWatcher = undefined;
         }
-        vscode.window.showInformationMessage('Clain: Preview stopped');
+        vscode.window.showInformationMessage('Chain: Preview stopped');
     });
 
-    const refreshPreviewCommand = vscode.commands.registerCommand('clain.refreshPreview', () => {
+    const refreshPreviewCommand = vscode.commands.registerCommand('chain.refreshPreview', () => {
         webviewManager.refresh();
         vscode.window.showInformationMessage('Preview refreshed');
     });
@@ -211,12 +211,12 @@ export function activate(context: vscode.ExtensionContext) {
         propertiesPanel
     );
 
-    const showPropertiesCommand = vscode.commands.registerCommand('clain.showProperties', () => {
-        vscode.commands.executeCommand('clain.propertiesPanel.focus');
+    const showPropertiesCommand = vscode.commands.registerCommand('chain.showProperties', () => {
+        vscode.commands.executeCommand('chain.propertiesPanel.focus');
     });
 
     // Click-to-Inject: Show Toolbox Command
-    const showToolboxCommand = vscode.commands.registerCommand('clain.showToolbox', () => {
+    const showToolboxCommand = vscode.commands.registerCommand('chain.showToolbox', () => {
         if (!toolboxPanel) {
             const selectionManager = SelectionStateManager.getInstance();
             toolboxPanel = new ToolboxPanel(context.extensionUri, selectionManager);
@@ -224,30 +224,30 @@ export function activate(context: vscode.ExtensionContext) {
         toolboxPanel.show();
     });
 
-    // Clain Skills Commands
-    const initProjectCommand = vscode.commands.registerCommand('clain.initProject', async () => {
-        vscode.window.showInformationMessage('Clain: Init Project - Implementation pending');
-        // TODO: Load and execute .clain/docs/init.md skill
+    // Chain Skills Commands
+    const initProjectCommand = vscode.commands.registerCommand('chain.initProject', async () => {
+        vscode.window.showInformationMessage('Chain: Init Project - Implementation pending');
+        // TODO: Load and execute .chain/docs/init.md skill
     });
 
-    const analyzeCodebaseCommand = vscode.commands.registerCommand('clain.analyzeCodebase', async () => {
-        vscode.window.showInformationMessage('Clain: Analyze Codebase - Implementation pending');
-        // TODO: Load and execute .clain/docs/analyze-codebase.md skill
+    const analyzeCodebaseCommand = vscode.commands.registerCommand('chain.analyzeCodebase', async () => {
+        vscode.window.showInformationMessage('Chain: Analyze Codebase - Implementation pending');
+        // TODO: Load and execute .chain/docs/analyze-codebase.md skill
     });
 
-    const generateMockDataCommand = vscode.commands.registerCommand('clain.generateMockData', async () => {
-        vscode.window.showInformationMessage('Clain: Generate Mock Data - Implementation pending');
-        // TODO: Load and execute .clain/docs/generate-mock-data.md skill
+    const generateMockDataCommand = vscode.commands.registerCommand('chain.generateMockData', async () => {
+        vscode.window.showInformationMessage('Chain: Generate Mock Data - Implementation pending');
+        // TODO: Load and execute .chain/docs/generate-mock-data.md skill
     });
 
-    const dataSwitchCommand = vscode.commands.registerCommand('clain.dataSwitch', async () => {
-        vscode.window.showInformationMessage('Clain: Data Switch - Implementation pending');
-        // TODO: Load and execute .clain/docs/data-switch.md skill
+    const dataSwitchCommand = vscode.commands.registerCommand('chain.dataSwitch', async () => {
+        vscode.window.showInformationMessage('Chain: Data Switch - Implementation pending');
+        // TODO: Load and execute .chain/docs/data-switch.md skill
     });
 
-    const consolidateStylesCommand = vscode.commands.registerCommand('clain.consolidateStyles', async () => {
-        vscode.window.showInformationMessage('Clain: Consolidate Styles - Implementation pending');
-        // TODO: Load and execute .clain/docs/style-consolidation.md skill
+    const consolidateStylesCommand = vscode.commands.registerCommand('chain.consolidateStyles', async () => {
+        vscode.window.showInformationMessage('Chain: Consolidate Styles - Implementation pending');
+        // TODO: Load and execute .chain/docs/style-consolidation.md skill
     });
 
     context.subscriptions.push(

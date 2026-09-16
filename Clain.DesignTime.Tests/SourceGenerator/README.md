@@ -1,6 +1,6 @@
 # Source Generator Tests
 
-Tests for the `ClainBlazorSourceGenerator` that injects `data-clain-src` attributes into Blazor components (`.razor` files).
+Tests for the `ClainBlazorSourceGenerator` that injects `data-chain-src` attributes into Blazor components (`.razor` files).
 
 ## Test Coverage
 
@@ -46,5 +46,5 @@ Allows tests to pass .razor file content directly to the generator.
 ## Running Tests
 
 ```bash
-dotnet test Clain.DesignTime.Tests.csproj --filter "FullyQualifiedName~SourceGenerator"
+dotnet test Chain.DesignTime.Tests.csproj --filter "FullyQualifiedName~SourceGenerator"
 ```

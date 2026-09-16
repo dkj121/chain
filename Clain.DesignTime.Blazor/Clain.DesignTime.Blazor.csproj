@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Clain.DesignTime.Shared\Clain.DesignTime.Shared.csproj" />
+    <ProjectReference Include="..\Chain.DesignTime.Shared\Chain.DesignTime.Shared.csproj" />
   </ItemGroup>
 
 </Project>

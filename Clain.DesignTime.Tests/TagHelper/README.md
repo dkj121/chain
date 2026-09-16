@@ -1,6 +1,6 @@
 # Tag Helper Tests
 
-Tests for the `ClainSourceTagHelper` that injects `data-clain-src` attributes into Razor Pages/MVC views (`.cshtml` files).
+Tests for the `ClainSourceTagHelper` that injects `data-chain-src` attributes into Razor Pages/MVC views (`.cshtml` files).
 
 ## Test Coverage
 
@@ -25,7 +25,7 @@ Verifies environment-based conditional attribute emission.
 - Integration with `IHostEnvironment`
 
 ### AttributeInjectionAssert
-Helper class for verifying `data-clain-src` attribute presence in test outputs.
+Helper class for verifying `data-chain-src` attribute presence in test outputs.
 
 **Note:** Attribute injection is Debug-only (`#if DEBUG`), so assertions only run in Debug builds.
 
@@ -40,5 +40,5 @@ Test double for `IHostEnvironment` that allows tests to control the environment 
 ## Running Tests
 
 ```bash
-dotnet test Clain.DesignTime.Tests.csproj --filter "FullyQualifiedName~TagHelper"
+dotnet test Chain.DesignTime.Tests.csproj --filter "FullyQualifiedName~TagHelper"
 ```

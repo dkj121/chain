@@ -34,7 +34,7 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
         var content = await response.Content.ReadAsStringAsync();
 
         // Assert
-        Assert.Contains("Welcome to Clain Test App", content);
+        Assert.Contains("Welcome to Chain Test App", content);
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
         var content = await response.Content.ReadAsStringAsync();
 
         // Assert
-        Assert.Contains("data-clain-src=\"Views/Shared/_Header.cshtml\"", content);
-        Assert.Contains("data-clain-src=\"Views/Shared/_Footer.cshtml\"", content);
+        Assert.Contains("data-chain-src=\"Views/Shared/_Header.cshtml\"", content);
+        Assert.Contains("data-chain-src=\"Views/Shared/_Footer.cshtml\"", content);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
         var content = await response.Content.ReadAsStringAsync();
 
         // Assert
-        Assert.Contains("data-clain-src=\"Views/Shared/_Card.cshtml\"", content);
+        Assert.Contains("data-chain-src=\"Views/Shared/_Card.cshtml\"", content);
     }
 
     [Fact]

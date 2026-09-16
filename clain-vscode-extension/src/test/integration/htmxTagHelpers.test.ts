@@ -22,7 +22,7 @@ suite('HtmxTagHelpers Integration Tests', () => {
         }
 
         // Execute the install command
-        await vscode.commands.executeCommand('clain.installHtmxTagHelpers');
+        await vscode.commands.executeCommand('chain.installHtmxTagHelpers');
 
         // Wait a bit for installation to complete
         await sleep(5000);

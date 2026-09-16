@@ -40,11 +40,11 @@ If any check fails, regenerate this guidance with `/hello-my-skills:generate-pro
 - [.NET Coding Conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions)
 - [Roslyn API Documentation](https://learn.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/)
 
-## Clain-specific patterns
+## Chain-specific patterns
 
 **Source Mapping:**
-- Use `data-clain-src` attributes for element-to-code mapping
-- Format: `data-clain-src="file.cshtml:line:char"`
+- Use `data-chain-src` attributes for element-to-code mapping
+- Format: `data-chain-src="file.cshtml:line:char"`
 - Surgical changes: precise line/character edits, not whole-file rewrites
 
 **Security:**

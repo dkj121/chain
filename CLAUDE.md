@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Clain** is an AI-driven, code-centric visual design tool for ASP.NET Core Razor applications. It positions code itself as the design language, inverting the traditional design-to-code workflow by making code the single source of truth.
+**Chain** is an AI-driven, code-centric visual design tool for ASP.NET Core Razor applications. It positions code itself as the design language, inverting the traditional design-to-code workflow by making code the single source of truth.
 
 ### Core Concept
 
-Unlike traditional WYSIWYG tools (Blend, Webflow) that use pre-built component libraries, Clain leverages AI to dynamically discover, search, and generate components from the actual project codebase. This creates a hybrid experience:
+Unlike traditional WYSIWYG tools (Blend, Webflow) that use pre-built component libraries, Chain leverages AI to dynamically discover, search, and generate components from the actual project codebase. This creates a hybrid experience:
 - **For developers**: Enhanced Razor preview with live code synchronization
 - **For designers**: Component-based visual assembly without requiring deep Razor knowledge
 
@@ -28,18 +28,18 @@ Secondary: Designers familiar with component-based workflows (Figma/Pen)
 
 - **Extension Host**: TypeScript (VS Code Extension API)
 - **Preview Rendering**: Embedded ASP.NET Core Kestrel server
-- **Source Mapping**: Custom Razor Tag Helper (`Clain.DesignTime` NuGet package)
+- **Source Mapping**: Custom Razor Tag Helper (`Chain.DesignTime` NuGet package)
 - **AI Integration**: Claude Code Skills + API
 - **Hot Reload**: .NET 6+ built-in hot reload capability
 
 ### UI Layout Philosophy
 
-Clain integrates into VS Code's native windowing system without fixed positions:
+Chain integrates into VS Code's native windowing system without fixed positions:
 
 ```
 ┌──────────┬────────────────────────────────────┬──────────────┐
 │ Explorer │                                    │ Chat         │
-│ Clain    │        Editor Area                 │ (Claude)     │
+│ Chain    │        Editor Area                 │ (Claude)     │
 │ ├─Files  │  ┌──────────────────────────────┐  │              │
 │ └─Toolbox│  │ Code View / Preview / Props  │  │              │
 │          │  │ (movable panels)             │  │              │
@@ -63,7 +63,7 @@ All views are **movable VS Code panels**, not fixed sidebars. Users can arrange 
 The toolbox dynamically populates by:
 1. **Static Analysis**: Scanning `Views/Shared/`, `ViewComponents/` at extension activation
 2. **AI Search**: Natural language queries → Claude matches/generates components
-3. **Drag-to-Insert**: AI translates drop location (via `data-clain-src`) into code insertion
+3. **Drag-to-Insert**: AI translates drop location (via `data-chain-src`) into code insertion
 
 **Toolbox UI** (sidebar or panel):
 ```
@@ -81,9 +81,9 @@ The toolbox dynamically populates by:
 
 **Problem**: Map rendered HTML elements back to original .cshtml source locations.
 
-**Solution**: Inject `data-clain-src` attributes via custom Tag Helper during Razor compilation.
+**Solution**: Inject `data-chain-src` attributes via custom Tag Helper during Razor compilation.
 
-**Implementation** (`Clain.DesignTime` NuGet package):
+**Implementation** (`Chain.DesignTime` NuGet package):
 ```csharp
 [HtmlTargetElement("*")]
 public class ClainSourceTagHelper : TagHelper
@@ -93,7 +93,7 @@ public class ClainSourceTagHelper : TagHelper
         var sourceSpan = GetRazorSourceSpan(context); // From Razor compiler
         if (sourceSpan != null)
         {
-            output.Attributes.Add("data-clain-src", 
+            output.Attributes.Add("data-chain-src", 
                 $"{sourceSpan.FilePath}:{sourceSpan.LineIndex}:{sourceSpan.CharacterIndex}");
         }
     }
@@ -104,7 +104,7 @@ public class ClainSourceTagHelper : TagHelper
 
 **Click-to-Locate Flow**:
 1. User clicks element in preview iframe
-2. JavaScript extracts `data-clain-src` → posts message to extension host
+2. JavaScript extracts `data-chain-src` → posts message to extension host
 3. Extension calls `vscode.window.showTextDocument()` with parsed location
 4. Code editor jumps to exact line/column
 
@@ -112,7 +112,7 @@ public class ClainSourceTagHelper : TagHelper
 
 **User Action**: Modify styles via properties panel  
 **Immediate Effect**: Inject inline `style=""` attribute to .cshtml  
-**After All**: Remind users to trigger `clain:style-consolidation` skill
+**After All**: Remind users to trigger `chain:style-consolidation` skill
 
 **AI Consolidation Logic**:
 - Detect CSS architecture (Tailwind/Bootstrap/custom)
@@ -137,25 +137,25 @@ _Layout > main > @foreach(var item in Model.Items) > div.card
 - Show禁止cursor when hovering invalid drop zones
 - Offer "Ask AI to refactor" button for complex moves
 
-## Clain Skills
+## Chain Skills
 
-Skills are loaded into Claude Code's context to standardize AI behavior. Located in `.clain/docs/` (later migrated to `.claude/skills/clain/`).
+Skills are loaded into Claude Code's context to standardize AI behavior. Located in `.chain/docs/` (later migrated to `.claude/skills/chain/`).
 
 ### Core Skills (MVP)
 
-1. **`clain:init`**  
-   Initialize `.clain/` structure, add `Clain.DesignTime` NuGet package. And conduct grill-me style interview to extract design philosophy, visual language, component strategy, constraints. Generate `DESIGN.md` and `design.json` focused on high-level design principles (not component catalogs).
+1. **`chain:init`**  
+   Initialize `.chain/` structure, add `Chain.DesignTime` NuGet package. And conduct grill-me style interview to extract design philosophy, visual language, component strategy, constraints. Generate `DESIGN.md` and `design.json` focused on high-level design principles (not component catalogs).
 
-2. **`clain:analyze-codebase`**  
+2. **`chain:analyze-codebase`**  
    For excited project, scan project for pages/components, detect CSS architecture (Tailwind/Bootstrap/custom), extract design tokens, populate `design.json` and `DESIGN.md`.
 
-3. **`clain:generate-mock-data`**  
+3. **`chain:generate-mock-data`**  
    Parse ViewModel definitions, generate semantic mock data (e.g., `UserName → "Alice Johnson"`), save to `mock-data.json`, configure injection in Development environment.
 
-4. `clain:data-switch`
+4. `chain:data-switch`
    A pop-up appears, allowing you to select the current data mode (mock data or real backend data).
 
-5. **`clain:style-consolidation`**  
+5. **`chain:style-consolidation`**  
    Analyze inline `style=""` attributes, group by similarity, check CSS architecture, suggest refactoring (extract class / modify existing / keep inline), present diff for approval.
 
 ### design.json Structure
@@ -199,7 +199,7 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
 
 **Focus**: UI rendering data only (not business logic simulation).
 
-**AI Responsibility**: Analyze Controller → ViewModel → View data flow through skills, but mock.json contains only the ViewModel JSON structure needed for design-time rendering and use `clain:data-switch` to switch between mock or real backend data.
+**AI Responsibility**: Analyze Controller → ViewModel → View data flow through skills, but mock.json contains only the ViewModel JSON structure needed for design-time rendering and use `chain:data-switch` to switch between mock or real backend data.
 
 **User Expectation**: "方便 AI 修改" means AI can replace mock data with proper frontend-backend contract structure before production deployment.
 
@@ -207,7 +207,7 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
 
 ```json
 {
-  "$schema": "https://clain.dev/schemas/mock-data.schema.json",
+  "$schema": "https://chain.dev/schemas/mock-data.schema.json",
   "version": "1.0",
   "models": {
     "MyApp.ViewModels.Home.IndexViewModel": {
@@ -249,11 +249,11 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
           },
           {
             "Id": 3,
-            "Title": "Designing with Clain",
+            "Title": "Designing with Chain",
             "Excerpt": "How to leverage AI-driven design tools for ASP.NET Core applications...",
             "Author": "Carol White",
             "PublishedDate": "2026-08-26T16:45:00Z",
-            "Tags": ["Design", "Clain", "Tools"],
+            "Tags": ["Design", "Chain", "Tools"],
             "ViewCount": 543,
             "LikeCount": 42
           }
@@ -377,7 +377,7 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
           {
             "Id": "n1",
             "Type": "info",
-            "Message": "New features available in Clain v1.2",
+            "Message": "New features available in Chain v1.2",
             "Timestamp": "2026-08-27T08:30:00Z",
             "IsRead": false
           },
@@ -413,7 +413,7 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
     "mockDelay": 0,
     "notes": [
       "Set dataMode to 'backend' to use real API data",
-      "Use clain:data-switch skill to toggle between modes",
+      "Use chain:data-switch skill to toggle between modes",
       "mockDelay (ms) simulates network latency for testing"
     ]
   }
@@ -442,7 +442,7 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
    - `fallbackToMockOnError`: If backend fails, use mock data (useful during development)
    - `mockDelay`: Simulate network latency (0 = instant, 500 = half-second delay)
 
-**AI Generation Strategy** (via `clain:generate-mock-data` skill):
+**AI Generation Strategy** (via `chain:generate-mock-data` skill):
 - Parse ViewModel class definitions (properties, types, attributes)
 - Analyze property names for semantic hints (`UserName` → person name, `Email` → valid email format)
 - Generate 3-5 items for collections (enough to show patterns, not overwhelming)
@@ -453,7 +453,7 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
 
 ```
 .
-├── .clain/
+├── .chain/
 │   ├── docs/               # Skill definitions (Markdown format)
 │   │   ├── init.md
 │   │   ├── analyze-codebase.md
@@ -462,7 +462,7 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
 │   │   └── style-consolidation.md
 │   ├── design.json         # Project design index (pages, components, tokens)
 │   ├── mock-data.json      # Render-time mock ViewModels
-│   ├── config.json         # Clain VS Code extension settings
+│   ├── config.json         # Chain VS Code extension settings
 │   └── .gitignore          # Exclude workspace.json (per-user state)
 ├── DESIGN.md               # High-level design philosophy (AI-generated)
 └── README.md               # Project documentation
@@ -479,13 +479,13 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
    ```
 
 2. **Implement Core Commands**:
-   - `Clain: Start Preview` → Launch Kestrel, create Webview panel
-   - `Clain: Stop Preview` → Terminate Kestrel process
-   - `Clain: Init Project` → Run `clain:init-project` skill
+   - `Chain: Start Preview` → Launch Kestrel, create Webview panel
+   - `Chain: Stop Preview` → Terminate Kestrel process
+   - `Chain: Init Project` → Run `chain:init-project` skill
 
-3. **Develop Clain.DesignTime NuGet Package**:
+3. **Develop Chain.DesignTime NuGet Package**:
    ```bash
-   dotnet new classlib -n Clain.DesignTime
+   dotnet new classlib -n Chain.DesignTime
    # Implement ClainSourceTagHelper
    dotnet pack
    ```
@@ -506,7 +506,7 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
 1. **Tag Helper Coverage Blind Spots**:  
    - `@Html.Raw()` and legacy HtmlHelper outputs don't go through Tag Helper pipeline
    - **MVP Solution**: Mark these as "unselectable" in preview (show tooltip: "Legacy code, edit directly")
-   - **Future**: Provide `clain migrate` to rewrite HtmlHelper → Tag Helper
+   - **Future**: Provide `chain migrate` to rewrite HtmlHelper → Tag Helper
 
 2. **Conditional Rendering Ambiguity**:  
    - Element inside `@if` block may exist 0 or 1 times in DOM
@@ -538,20 +538,20 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
 
 ### Extension Commands (VS Code Command Palette)
 
-- `Clain: Init Project` → Initialize `.clain/` structure
-- `Clain: Start Preview` → Launch preview + toolbox
-- `Clain: Analyze Codebase` → Scan and update design.json
-- `Clain: Generate Mock Data` → Create mock-data.json from ViewModels
-- `Clain: Update Design Document` → Run grill-me interview for DESIGN.md
-- `Clain: Consolidate Styles` → Review and refactor inline styles
+- `Chain: Init Project` → Initialize `.chain/` structure
+- `Chain: Start Preview` → Launch preview + toolbox
+- `Chain: Analyze Codebase` → Scan and update design.json
+- `Chain: Generate Mock Data` → Create mock-data.json from ViewModels
+- `Chain: Update Design Document` → Run grill-me interview for DESIGN.md
+- `Chain: Consolidate Styles` → Review and refactor inline styles
 
 ### CLI Commands (Future)
 
 ```bash
-clain init              # Initialize project
-clain analyze           # Scan codebase
-clain design            # Interactive DESIGN.md generation
-clain migrate           # Convert HtmlHelper to Tag Helper
+chain init              # Initialize project
+chain analyze           # Scan codebase
+chain design            # Interactive DESIGN.md generation
+chain migrate           # Convert HtmlHelper to Tag Helper
 ```
 
 ## Design Principles
@@ -560,7 +560,7 @@ clain migrate           # Convert HtmlHelper to Tag Helper
 
 2. **AI as Component Provider**: No static component library. AI dynamically discovers or generates components based on project context.
 
-3. **Transparent Operations**: Every visual edit shows corresponding code changes. Users always understand what Clain is modifying.
+3. **Transparent Operations**: Every visual edit shows corresponding code changes. Users always understand what Chain is modifying.
 
 4. **Graceful Degradation**: If advanced features fail (Kestrel won't start, AI unavailable), core code editing still works.
 

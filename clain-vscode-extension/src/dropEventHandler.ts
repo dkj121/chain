@@ -69,13 +69,13 @@ export class DropEventHandler {
     }
 
     /**
-     * Parse data-clain-src attribute format: "file.cshtml:line:char"
+     * Parse data-chain-src attribute format: "file.cshtml:line:char"
      */
     private parseDataClainSrc(targetSrc: string): { file: string; line: number; character: number } {
         const parts = targetSrc.split(':');
 
         if (parts.length < 3) {
-            throw new Error('Invalid data-clain-src format. Expected: "file:line:char"');
+            throw new Error('Invalid data-chain-src format. Expected: "file:line:char"');
         }
 
         // File path may contain colons (e.g., Windows C:\...), so join all but last 2 parts
@@ -84,7 +84,7 @@ export class DropEventHandler {
         const character = parseInt(parts[parts.length - 1], 10);
 
         if (isNaN(line) || isNaN(character)) {
-            throw new Error('Invalid data-clain-src format: line and character must be numbers');
+            throw new Error('Invalid data-chain-src format: line and character must be numbers');
         }
 
         return { file, line, character };

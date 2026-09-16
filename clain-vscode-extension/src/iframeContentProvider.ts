@@ -15,7 +15,7 @@ export class IframeContentProvider implements WebviewContent {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clain Preview</title>
+    <title>Chain Preview</title>
     <style>
         * {
             margin: 0;
@@ -195,7 +195,7 @@ export class IframeContentProvider implements WebviewContent {
 
             // Listen for messages from iframe
             window.addEventListener('message', function(event) {
-                if (event.data && event.data.type === 'clain-click') {
+                if (event.data && event.data.type === 'chain-click') {
                     // Forward click event to extension host
                     vscode.postMessage({
                         type: 'click',
@@ -283,27 +283,27 @@ export class IframeContentProvider implements WebviewContent {
         // It needs to be serialized as a string
         return `\`
             (function() {
-                console.log('Clain click capture script loaded');
+                console.log('Chain click capture script loaded');
 
                 document.addEventListener('click', function(e) {
-                    // Find the clicked element or closest ancestor with data-clain-src
+                    // Find the clicked element or closest ancestor with data-chain-src
                     let element = e.target;
                     let dataClainSrc = null;
 
                     while (element && element !== document.body) {
-                        if (element.hasAttribute && element.hasAttribute('data-clain-src')) {
-                            dataClainSrc = element.getAttribute('data-clain-src');
+                        if (element.hasAttribute && element.hasAttribute('data-chain-src')) {
+                            dataClainSrc = element.getAttribute('data-chain-src');
                             break;
                         }
                         element = element.parentElement;
                     }
 
                     if (dataClainSrc) {
-                        console.log('Clicked element with data-clain-src:', dataClainSrc);
+                        console.log('Clicked element with data-chain-src:', dataClainSrc);
 
                         // Send message to parent window (webview)
                         window.parent.postMessage({
-                            type: 'clain-click',
+                            type: 'chain-click',
                             event: {
                                 x: e.clientX,
                                 y: e.clientY,
@@ -316,7 +316,7 @@ export class IframeContentProvider implements WebviewContent {
                             }
                         }, '*');
 
-                        // Prevent default action for clicks with data-clain-src
+                        // Prevent default action for clicks with data-chain-src
                         e.preventDefault();
                         e.stopPropagation();
                     }

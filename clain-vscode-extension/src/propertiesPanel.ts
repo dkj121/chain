@@ -31,7 +31,7 @@ type WebviewMessage = CodeChangedMessage | AttributeChangedMessage | StyleChange
  * Initially shows a placeholder message until an element is selected.
  */
 export class PropertiesPanel implements vscode.WebviewViewProvider {
-    public static readonly viewType = 'clain.propertiesPanel';
+    public static readonly viewType = 'chain.propertiesPanel';
     private static readonly MAX_CODE_SIZE = 50000; // 50KB limit for code edits
     private static readonly MONACO_VERSION = '0.44.0';
 
@@ -42,7 +42,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
     private logger: vscode.OutputChannel;
 
     constructor() {
-        this.logger = vscode.window.createOutputChannel('Clain - Properties Panel');
+        this.logger = vscode.window.createOutputChannel('Chain - Properties Panel');
     }
 
     /**
@@ -379,7 +379,7 @@ export class PropertiesPanel implements vscode.WebviewViewProvider {
 
             // Show information message
             vscode.window.showInformationMessage(
-                'Style consolidation will be implemented in Issue #21. Use Claude Code chat to manually trigger clain:style-consolidation skill.'
+                'Style consolidation will be implemented in Issue #21. Use Claude Code chat to manually trigger chain:style-consolidation skill.'
             );
 
             this.logger.appendLine(`Style consolidation requested for ${filePath}`);

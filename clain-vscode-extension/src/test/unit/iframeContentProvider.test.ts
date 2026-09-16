@@ -71,7 +71,7 @@ suite('IframeContentProvider Tests', () => {
             // Verify script injection logic is present
             assert.ok(html.includes('Inject click capture script'));
             assert.ok(html.includes('window.addEventListener(\'message\''));
-            assert.ok(html.includes('clain-click'));
+            assert.ok(html.includes('chain-click'));
         });
 
         test('Should handle postMessage for click events', () => {
@@ -83,11 +83,11 @@ suite('IframeContentProvider Tests', () => {
             const html = provider.getHtml(info);
 
             // Verify message handling is set up
-            assert.ok(html.includes('event.data.type === \'clain-click\''));
+            assert.ok(html.includes('event.data.type === \'chain-click\''));
             assert.ok(html.includes('vscode.postMessage'));
         });
 
-        test('Should include click capture script with data-clain-src extraction', () => {
+        test('Should include click capture script with data-chain-src extraction', () => {
             const info: ConnectionInfo = {
                 state: 'connected',
                 url: 'http://localhost:5000'
@@ -96,12 +96,12 @@ suite('IframeContentProvider Tests', () => {
             const html = provider.getHtml(info);
 
             // Verify click capture script content
-            assert.ok(html.includes('data-clain-src'));
+            assert.ok(html.includes('data-chain-src'));
             assert.ok(html.includes('click'));
             assert.ok(html.includes('window.parent.postMessage'));
         });
 
-        test('Should prevent default action for clicks with data-clain-src', () => {
+        test('Should prevent default action for clicks with data-chain-src', () => {
             const info: ConnectionInfo = {
                 state: 'connected',
                 url: 'http://localhost:5000'
@@ -113,7 +113,7 @@ suite('IframeContentProvider Tests', () => {
             assert.ok(html.includes('stopPropagation'));
         });
 
-        test('Should traverse DOM tree to find data-clain-src on ancestors', () => {
+        test('Should traverse DOM tree to find data-chain-src on ancestors', () => {
             const info: ConnectionInfo = {
                 state: 'connected',
                 url: 'http://localhost:5000'

@@ -83,7 +83,7 @@ export class DropZoneHandler {
             throw new Error('Target file must be a Razor file (.cshtml or .razor)');
         }
 
-        // Parse the data-clain-src attribute to get file location
+        // Parse the data-chain-src attribute to get file location
         const insertionPoint = this.parseTargetLocation(
             dropInfo.targetFile,
             dropInfo.targetLine,
@@ -96,7 +96,7 @@ export class DropZoneHandler {
     }
 
     /**
-     * Parse target location from data-clain-src attribute
+     * Parse target location from data-chain-src attribute
      * Format: "file.cshtml:line:char"
      */
     private parseTargetLocation(

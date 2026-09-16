@@ -4,9 +4,9 @@ using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
-using Clain.DesignTime.Blazor;
+using Chain.DesignTime.Blazor;
 
-namespace Clain.DesignTime.Tests.SourceGenerator;
+namespace Chain.DesignTime.Tests.SourceGenerator;
 
 public class ClainBlazorSourceGeneratorTests
 {
@@ -21,7 +21,7 @@ public class ClainBlazorSourceGeneratorTests
 
         // Assert
         var generatedFiles = compilation.SyntaxTrees
-            .Where(t => t.FilePath.Contains("MyComponent.Clain.g.cs"))
+            .Where(t => t.FilePath.Contains("MyComponent.Chain.g.cs"))
             .ToList();
 
         Assert.Single(generatedFiles);
@@ -38,7 +38,7 @@ public class ClainBlazorSourceGeneratorTests
         var (compilation, _) = RunGenerator(razorSource, filePath);
 
         // Assert
-        var generatedSource = GetGeneratedSource(compilation, "TestComponent.Clain.g.cs");
+        var generatedSource = GetGeneratedSource(compilation, "TestComponent.Chain.g.cs");
         Assert.NotNull(generatedSource);
 
         // Path should be normalized to forward slashes
@@ -56,7 +56,7 @@ public class ClainBlazorSourceGeneratorTests
         var (compilation, _) = RunGenerator(razorSource, "Counter.razor");
 
         // Assert
-        var generatedSource = GetGeneratedSource(compilation, "Counter.Clain.g.cs");
+        var generatedSource = GetGeneratedSource(compilation, "Counter.Chain.g.cs");
         Assert.NotNull(generatedSource);
         Assert.Contains("public partial class Counter", generatedSource);
     }

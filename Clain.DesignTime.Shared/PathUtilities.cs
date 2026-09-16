@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Clain.DesignTime.Common
+namespace Chain.DesignTime.Common
 {
     /// <summary>
     /// File path manipulation utilities for normalizing and formatting source locations.

@@ -140,7 +140,7 @@ internal class ClainRenderTreeBuilder
     public void OpenElement(int sequence, string elementName, int line, int character)
     {
         _inner.OpenElement(sequence, elementName);
-        _inner.AddAttribute(sequence + 1, "data-clain-src", $"{_sourceFile}:{line}:{character}");
+        _inner.AddAttribute(sequence + 1, "data-chain-src", $"{_sourceFile}:{line}:{character}");
     }
 
     // Other methods delegate to _inner...
@@ -180,7 +180,7 @@ Large projects have hundreds of `.razor` files. Generator must be incremental.
 
 ```bash
 # Build the generator
-dotnet build Clain.DesignTime.Blazor/Clain.DesignTime.Blazor.csproj
+dotnet build Chain.DesignTime.Blazor/Chain.DesignTime.Blazor.csproj
 
 # Run generator tests
 dotnet test --filter "FullyQualifiedName~SourceGenerator"
@@ -188,7 +188,7 @@ dotnet test --filter "FullyQualifiedName~SourceGenerator"
 # Manual testing: Create a test Blazor project
 dotnet new blazor -o TestBlazorApp
 cd TestBlazorApp
-dotnet add reference ../Clain.DesignTime.Blazor/Clain.DesignTime.Blazor.csproj
+dotnet add reference ../Chain.DesignTime.Blazor/Chain.DesignTime.Blazor.csproj
 
 # Build and inspect generated files
 dotnet build

@@ -1,6 +1,6 @@
 using System;
 
-namespace Clain.DesignTime.Common
+namespace Chain.DesignTime.Common
 {
     /// <summary>
     /// Environment detection utilities for determining when to emit design-time attributes.

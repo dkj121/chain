@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Hosting;
-using Clain.DesignTime.Common;
+using Chain.DesignTime.Common;
 
-namespace Clain.DesignTime
+namespace Chain.DesignTime
 {
     /// <summary>
-    /// Tag Helper that injects data-clain-src attributes with source location information.
+    /// Tag Helper that injects data-chain-src attributes with source location information.
     /// Attributes are only emitted in design-time environments; in Release builds the
     /// injection is removed entirely by conditional compilation.
     /// </summary>
@@ -31,7 +31,7 @@ namespace Clain.DesignTime
 
             if (sourceSpan != null)
             {
-                output.Attributes.Add("data-clain-src",
+                output.Attributes.Add("data-chain-src",
                     $"{sourceSpan.FilePath}:{sourceSpan.Line}:{sourceSpan.Character}");
             }
 #endif

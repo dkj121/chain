@@ -1,4 +1,4 @@
-# Clain VS Code
+# Chain VS Code
 
 AI-driven visual design tool for ASP.NET Core Razor applications.
 
@@ -13,7 +13,7 @@ AI-driven visual design tool for ASP.NET Core Razor applications.
 ## Getting Started
 
 1. Open an ASP.NET Core project in VS Code
-2. Run command: `Clain: Start Preview` (Ctrl+Shift+P)
+2. Run command: `Chain: Start Preview` (Ctrl+Shift+P)
 3. Click any element in the preview to navigate to its source
 
 ## Development

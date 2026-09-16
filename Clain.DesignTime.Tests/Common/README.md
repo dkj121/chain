@@ -1,6 +1,6 @@
 # Common Tests
 
-Tests for shared utilities in `Clain.DesignTime.Shared`.
+Tests for shared utilities in `Chain.DesignTime.Shared`.
 
 ## Test Coverage
 
@@ -39,5 +39,5 @@ Verifies source location formatting.
 ## Running Tests
 
 ```bash
-dotnet test Clain.DesignTime.Tests.csproj --filter "FullyQualifiedName~Common"
+dotnet test Chain.DesignTime.Tests.csproj --filter "FullyQualifiedName~Common"
 ```

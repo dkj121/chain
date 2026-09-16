@@ -1,6 +1,6 @@
-# Clain.DesignTime.Blazor
+# Chain.DesignTime.Blazor
 
-Roslyn source generator that injects `data-clain-src` attributes into Blazor components for click-to-source navigation.
+Roslyn source generator that injects `data-chain-src` attributes into Blazor components for click-to-source navigation.
 
 ## Purpose
 
@@ -10,7 +10,7 @@ Enables VS Code extension to provide click-to-source functionality for Blazor `.
 
 1. **Compile-time analysis**: Runs during Blazor compilation as an incremental source generator
 2. **Razor file detection**: Processes `.razor` files from `AdditionalFiles`
-3. **Code generation**: Generates partial classes that modify `BuildRenderTree` to inject `data-clain-src` attributes
+3. **Code generation**: Generates partial classes that modify `BuildRenderTree` to inject `data-chain-src` attributes
 4. **Conditional compilation**: Only active under `#if DEBUG || CLAIN_DESIGN`
 
 ## Architecture
@@ -39,10 +39,10 @@ namespace MyApp.Components
 {
     public partial class Counter
     {
-        // Wraps BuildRenderTree to inject data-clain-src attributes
+        // Wraps BuildRenderTree to inject data-chain-src attributes
         // Original: builder.OpenElement(0, "div");
         // Modified: builder.OpenElement(0, "div");
-        //           builder.AddAttribute(1, "data-clain-src", "Components/Counter.razor:10:5");
+        //           builder.AddAttribute(1, "data-chain-src", "Components/Counter.razor:10:5");
     }
 }
 #endif
@@ -50,7 +50,7 @@ namespace MyApp.Components
 
 ## Usage
 
-This generator is automatically included when the `Clain.DesignTime` NuGet package is installed in a Blazor project.
+This generator is automatically included when the `Chain.DesignTime` NuGet package is installed in a Blazor project.
 
 No manual configuration required - the generator detects `.razor` files and processes them automatically.
 
@@ -58,7 +58,7 @@ No manual configuration required - the generator detects `.razor` files and proc
 
 - **Microsoft.CodeAnalysis.CSharp** (4.5.0) - Roslyn compiler APIs
 - **Microsoft.AspNetCore.Razor.Language** (6.0.0) - Razor syntax tree parsing
-- **Clain.DesignTime.Shared** - Common utilities
+- **Chain.DesignTime.Shared** - Common utilities
 
 ## Target Framework
 

@@ -105,7 +105,7 @@ export class ToolboxPanel {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Clain Toolbox</title>
+    <title>Chain Toolbox</title>
 </head>
 <body>
     <h1>Toolbox</h1>

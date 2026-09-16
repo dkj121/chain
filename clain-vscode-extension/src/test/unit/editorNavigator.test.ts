@@ -85,7 +85,7 @@ suite('EditorNavigator Tests', () => {
     });
 
     suite('parseSourceLocation', () => {
-        test('Should parse valid data-clain-src format', () => {
+        test('Should parse valid data-chain-src format', () => {
             const result = navigator.parseSourceLocation('Views/Home/Index.cshtml:10:5');
 
             assert.strictEqual(result.file, 'Views/Home/Index.cshtml');
@@ -206,7 +206,7 @@ suite('EditorNavigator Tests', () => {
     });
 
     suite('handleClickEvent', () => {
-        test('Should parse and navigate when data-clain-src is present', async () => {
+        test('Should parse and navigate when data-chain-src is present', async () => {
             const srcAttribute = 'Views/Home/Index.cshtml:10:5';
 
             await navigator.handleClickEvent(srcAttribute, '/workspace');
@@ -215,14 +215,14 @@ suite('EditorNavigator Tests', () => {
             assert.strictEqual(mockWindow.lastUri.fsPath, path.join('/workspace', 'Views/Home/Index.cshtml'));
         });
 
-        test('Should throw on missing data-clain-src', async () => {
+        test('Should throw on missing data-chain-src', async () => {
             await assert.rejects(
                 async () => navigator.handleClickEvent('', '/workspace'),
                 /Invalid source location format/
             );
         });
 
-        test('Should throw on malformed data-clain-src', async () => {
+        test('Should throw on malformed data-chain-src', async () => {
             await assert.rejects(
                 async () => navigator.handleClickEvent('invalid-format', '/workspace'),
                 /Invalid source location format/

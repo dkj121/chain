@@ -1,9 +1,9 @@
 {
-  "name": "clain",
-  "displayName": "Clain",
+  "name": "chain",
+  "displayName": "Chain",
   "description": "AI-driven visual design tool for ASP.NET Core Razor applications",
   "version": "0.1.0",
-  "publisher": "clain",
+  "publisher": "chain",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -11,58 +11,58 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:clain.startPreview",
-    "onCommand:clain.initProject",
-    "onCommand:clain.analyzeCodebase",
-    "onCommand:clain.generateMockData",
-    "onCommand:clain.dataSwitch",
-    "onCommand:clain.consolidateStyles"
+    "onCommand:chain.startPreview",
+    "onCommand:chain.initProject",
+    "onCommand:chain.analyzeCodebase",
+    "onCommand:chain.generateMockData",
+    "onCommand:chain.dataSwitch",
+    "onCommand:chain.consolidateStyles"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "clain.startPreview",
-        "title": "Clain: Start Preview"
+        "command": "chain.startPreview",
+        "title": "Chain: Start Preview"
       },
       {
-        "command": "clain.stopPreview",
-        "title": "Clain: Stop Preview"
+        "command": "chain.stopPreview",
+        "title": "Chain: Stop Preview"
       },
       {
-        "command": "clain.refreshPreview",
-        "title": "Clain: Refresh Preview"
+        "command": "chain.refreshPreview",
+        "title": "Chain: Refresh Preview"
       },
       {
-        "command": "clain.showProperties",
-        "title": "Clain: Show Properties"
+        "command": "chain.showProperties",
+        "title": "Chain: Show Properties"
       },
       {
-        "command": "clain.initProject",
-        "title": "Clain: Init Project"
+        "command": "chain.initProject",
+        "title": "Chain: Init Project"
       },
       {
-        "command": "clain.analyzeCodebase",
-        "title": "Clain: Analyze Codebase"
+        "command": "chain.analyzeCodebase",
+        "title": "Chain: Analyze Codebase"
       },
       {
-        "command": "clain.generateMockData",
-        "title": "Clain: Generate Mock Data"
+        "command": "chain.generateMockData",
+        "title": "Chain: Generate Mock Data"
       },
       {
-        "command": "clain.dataSwitch",
-        "title": "Clain: Data Switch"
+        "command": "chain.dataSwitch",
+        "title": "Chain: Data Switch"
       },
       {
-        "command": "clain.consolidateStyles",
-        "title": "Clain: Consolidate Styles"
+        "command": "chain.consolidateStyles",
+        "title": "Chain: Consolidate Styles"
       }
     ],
     "views": {
-      "clain": [
+      "chain": [
         {
           "type": "webview",
-          "id": "clain.propertiesPanel",
+          "id": "chain.propertiesPanel",
           "name": "Properties"
         }
       ]
@@ -70,8 +70,8 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "clain",
-          "title": "Clain",
+          "id": "chain",
+          "title": "Chain",
           "icon": "$(preview)"
         }
       ]

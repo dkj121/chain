@@ -1,7 +1,7 @@
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
-namespace Clain.DesignTime.Tests.TagHelper
+namespace Chain.DesignTime.Tests.TagHelper
 {
     /// <summary>
     /// Test double for IHostEnvironment, letting tests choose the environment name.

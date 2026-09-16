@@ -1,6 +1,6 @@
-# Clain.DesignTime.Shared
+# Chain.DesignTime.Shared
 
-Shared utilities for Clain design-time source mapping across different ASP.NET Core scenarios.
+Shared utilities for Chain design-time source mapping across different ASP.NET Core scenarios.
 
 ## Purpose
 
@@ -11,7 +11,7 @@ This library provides common infrastructure used by both:
 ## Components
 
 ### SourceSpanInfo
-Represents a source location in a file (file path, line, character). Used to format the `data-clain-src` attribute value.
+Represents a source location in a file (file path, line, character). Used to format the `data-chain-src` attribute value.
 
 ```csharp
 var span = new SourceSpanInfo 

@@ -1,17 +1,17 @@
 ---
-name: clain:init
-description: Initialize a new ASP.NET Core project for Clain visual design tool. Use this skill when the user runs "Clain Init Project" command, wants to set up Clain for a new project, or needs to establish design principles and constraints for an ASP.NET Core application. Creates .clain/ structure, adds Clain.DesignTime NuGet package, conducts design philosophy interview, and generates DESIGN.md.
+name: chain:init
+description: Initialize a new ASP.NET Core project for Chain visual design tool. Use this skill when the user runs "Chain Init Project" command, wants to set up Chain for a new project, or needs to establish design principles and constraints for an ASP.NET Core application. Creates .chain/ structure, adds Chain.DesignTime NuGet package, conducts design philosophy interview, and generates DESIGN.md.
 ---
 
-# Clain Project Initialization
+# Chain Project Initialization
 
-Initialize an ASP.NET Core project for Clain, establishing the design philosophy and project structure needed for AI-driven visual editing.
+Initialize an ASP.NET Core project for Chain, establishing the design philosophy and project structure needed for AI-driven visual editing.
 
 ## What this skill does
 
 1. Verifies ASP.NET Core project structure
-2. Creates `.clain/` directory with configuration files
-3. Adds `Clain.DesignTime` NuGet package for source mapping
+2. Creates `.chain/` directory with configuration files
+3. Adds `Chain.DesignTime` NuGet package for source mapping
 4. Conducts design philosophy interview (grill-me style)
 5. Generates `DESIGN.md` with project design principles
 6. Creates initial `design.json` structure
@@ -30,14 +30,14 @@ Check that the workspace contains a valid ASP.NET Core project:
 - At least one `.csproj` file exists
 - Project is ASP.NET Core: `<Project Sdk="Microsoft.NET.Sdk.Web">`
 
-If multiple projects exist, ask user which one to initialize for Clain.
+If multiple projects exist, ask user which one to initialize for Chain.
 
 ### 2. Create Directory Structure
 
-Create `.clain/` in the workspace root:
+Create `.chain/` in the workspace root:
 
 ```
-.clain/
+.chain/
 ├── docs/           # Skill definitions
 ├── design.json     # Project structure index (populated by analyze-codebase)
 ├── mock-data.json  # Mock ViewModels (populated by generate-mock-data)
@@ -45,12 +45,12 @@ Create `.clain/` in the workspace root:
 └── .gitignore      # Exclude workspace.json
 ```
 
-**Create `.clain/.gitignore`:**
+**Create `.chain/.gitignore`:**
 ```
 workspace.json
 ```
 
-**Create `.clain/config.json`:**
+**Create `.chain/config.json`:**
 ```json
 {
   "version": "1.0",
@@ -69,7 +69,7 @@ workspace.json
 
 Run in the selected project directory:
 ```bash
-dotnet add package Clain.DesignTime
+dotnet add package Chain.DesignTime
 ```
 
 If the package doesn't exist yet (MVP phase), skip this step and note that the Tag Helper requires manual setup.
@@ -106,7 +106,7 @@ Use a grill-me questioning style to understand the project's design approach. As
 
 ### 5. Generate DESIGN.md
 
-Create `DESIGN.md` in the workspace root (not inside `.clain/`):
+Create `DESIGN.md` in the workspace root (not inside `.chain/`):
 
 ```markdown
 # Design Philosophy
@@ -153,7 +153,7 @@ Create `DESIGN.md` in the workspace root (not inside `.clain/`):
 
 ### 6. Create Initial design.json
 
-Create `.clain/design.json` with metadata structure:
+Create `.chain/design.json` with metadata structure:
 
 ```json
 {
@@ -170,29 +170,29 @@ Create `.clain/design.json` with metadata structure:
 }
 ```
 
-Populate `cssArchitecture` and `constraints` arrays from the interview answers. Leave `pages`, `components`, and `designTokens` empty — they'll be filled by the `clain:analyze-codebase` skill.
+Populate `cssArchitecture` and `constraints` arrays from the interview answers. Leave `pages`, `components`, and `designTokens` empty — they'll be filled by the `chain:analyze-codebase` skill.
 
 ### 7. Verify Setup
 
 Confirm that:
-- `.clain/` directory exists with all required files
+- `.chain/` directory exists with all required files
 - `DESIGN.md` exists at workspace root
-- `.clain/design.json` contains valid JSON
-- `.clain/config.json` exists with valid settings
+- `.chain/design.json` contains valid JSON
+- `.chain/config.json` exists with valid settings
 - NuGet package was added (or skipped with note)
 
 ## Completion Report
 
 Show the user:
 ```
-✓ Created .clain/ directory structure
-✓ Added Clain.DesignTime NuGet package
+✓ Created .chain/ directory structure
+✓ Added Chain.DesignTime NuGet package
 ✓ Generated DESIGN.md with design philosophy
 ✓ Created design.json with project metadata
 
 Next steps:
-- Run "Clain: Analyze Codebase" to scan existing components
-- Run "Clain: Start Preview" to begin visual editing
+- Run "Chain: Analyze Codebase" to scan existing components
+- Run "Chain: Start Preview" to begin visual editing
 ```
 
 ## Error Handling
@@ -200,7 +200,7 @@ Next steps:
 - **No .csproj found**: Show error message asking user to open an ASP.NET Core project workspace
 - **Multiple projects**: Display VS Code QuickPick to let user select which project to initialize
 - **Permission denied**: Show error with the specific path that failed
-- **Interview interrupted**: Save partial `DESIGN.md` with note at top: `<!-- Incomplete - resume with clain:init -->`
+- **Interview interrupted**: Save partial `DESIGN.md` with note at top: `<!-- Incomplete - resume with chain:init -->`
 - **NuGet package not found**: Skip package installation and inform user that Tag Helper setup is manual for now
 
 ## Important Notes
@@ -208,4 +208,4 @@ Next steps:
 - `DESIGN.md` is human-editable. AI reads it for context but never overwrites without user confirmation.
 - `design.json` is machine-managed. Users should edit source files rather than manually editing this JSON.
 - This skill should run once per project. Re-running updates existing files with user confirmation.
-- The `.clain/docs/` directory is created empty — skill definitions live in `.claude/skills/clain/` instead.
+- The `.chain/docs/` directory is created empty — skill definitions live in `.claude/skills/chain/` instead.

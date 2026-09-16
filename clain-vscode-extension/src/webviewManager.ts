@@ -34,7 +34,7 @@ export class WebviewManager {
 
         this.panel = vscodeWindow.createWebviewPanel(
             'clainPreview',
-            'Clain Preview',
+            'Chain Preview',
             1, // ViewColumn.One
             {
                 enableScripts: true,

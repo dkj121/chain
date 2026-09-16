@@ -10,8 +10,8 @@ public class HomeController : Controller
     {
         var viewModel = new HomeViewModel
         {
-            Title = "Welcome to Clain Test App",
-            WelcomeMessage = "This is a test application for Clain VS Code Extension",
+            Title = "Welcome to Chain Test App",
+            WelcomeMessage = "This is a test application for Chain VS Code Extension",
             Features = new List<string>
             {
                 "Live Preview with Hot Reload",

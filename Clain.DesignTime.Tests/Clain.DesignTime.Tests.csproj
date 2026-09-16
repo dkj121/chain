@@ -20,9 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Clain.DesignTime\Clain.DesignTime.csproj" />
-    <ProjectReference Include="..\Clain.DesignTime.Shared\Clain.DesignTime.Shared.csproj" />
-    <ProjectReference Include="..\Clain.DesignTime.Blazor\Clain.DesignTime.Blazor.csproj" />
+    <ProjectReference Include="..\Chain.DesignTime\Chain.DesignTime.csproj" />
+    <ProjectReference Include="..\Chain.DesignTime.Shared\Chain.DesignTime.Shared.csproj" />
+    <ProjectReference Include="..\Chain.DesignTime.Blazor\Chain.DesignTime.Blazor.csproj" />
   </ItemGroup>
 
 </Project>

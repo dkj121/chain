@@ -18,7 +18,7 @@ export class BreadcrumbProvider implements vscode.Disposable {
 
     constructor(razorParser: RazorAstParser, logger?: vscode.OutputChannel) {
         this.razorParser = razorParser;
-        this.logger = logger || vscode.window.createOutputChannel('Clain - Breadcrumb');
+        this.logger = logger || vscode.window.createOutputChannel('Chain - Breadcrumb');
         this.selectionManager = SelectionStateManager.getInstance();
 
         // Listen for selection changes
