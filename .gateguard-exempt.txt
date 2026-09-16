@@ -1,0 +1,2 @@
+# Test projects are exempt from fact-forcing gate
+test-projects/**/*

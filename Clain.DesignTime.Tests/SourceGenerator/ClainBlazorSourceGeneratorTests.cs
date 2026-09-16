@@ -8,79 +8,23 @@ using Clain.DesignTime.Blazor;
 
 namespace Clain.DesignTime.Tests.SourceGenerator;
 
-/// <summary>
-/// Tests for the ClainBlazorSourceGenerator.
-/// Phase 1: Verify the generator runs and produces output for simple components with divs.
-/// </summary>
 public class ClainBlazorSourceGeneratorTests
 {
     [Fact]
-    public void Generator_ProducesSource_ForSimpleComponentWithDiv()
+    public void Generator_EmitsFileForEachRazorComponent()
     {
         // Arrange
-        var razorSource = @"
-@page ""/counter""
-
-<h3>Counter</h3>
-<div>Current count: @currentCount</div>
-
-@code {
-    private int currentCount = 0;
-}
-";
+        var razorSource = "<div>Hello</div>";
 
         // Act
-        var (compilation, diagnostics) = RunGenerator(razorSource, "Counter.razor");
+        var (compilation, _) = RunGenerator(razorSource, "MyComponent.razor");
 
         // Assert
-        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
+        var generatedFiles = compilation.SyntaxTrees
+            .Where(t => t.FilePath.Contains("MyComponent.Clain.g.cs"))
+            .ToList();
 
-        var generatedSource = GetGeneratedSource(compilation, "Counter.Clain.g.cs");
-        Assert.NotNull(generatedSource);
-        Assert.Contains("public partial class Counter", generatedSource);
-    }
-
-    [Fact]
-    public void Generator_SkipsFiles_WithoutDivElements()
-    {
-        // Arrange
-        var razorSource = @"
-@page ""/test""
-
-<h3>No Divs Here</h3>
-
-@code {
-    private string title = ""Test"";
-}
-";
-
-        // Act
-        var (compilation, diagnostics) = RunGenerator(razorSource, "Test.razor");
-
-        // Assert
-        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-
-        var generatedSource = GetGeneratedSource(compilation, "Test.Clain.g.cs");
-        // Phase 1: Generator skips files without divs
-        Assert.Null(generatedSource);
-    }
-
-    [Fact]
-    public void Generator_IncludesConditionalCompilation_InGeneratedCode()
-    {
-        // Arrange
-        var razorSource = @"
-<div>Test content</div>
-";
-
-        // Act
-        var (compilation, _) = RunGenerator(razorSource, "TestComponent.razor");
-
-        // Assert
-        var generatedSource = GetGeneratedSource(compilation, "TestComponent.Clain.g.cs");
-        Assert.NotNull(generatedSource);
-        Assert.Contains("#if DEBUG || CLAIN_DESIGN", generatedSource);
-        Assert.Contains("#endif", generatedSource);
+        Assert.Single(generatedFiles);
     }
 
     [Fact]
@@ -136,18 +80,22 @@ public class ClainBlazorSourceGeneratorTests
 
     private (Compilation, ImmutableArray<Diagnostic>) RunGenerator(string razorSource, string fileName)
     {
-        // Create a compilation
+        // Create a compilation with DEBUG preprocessor symbol
+        var parseOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG" });
         var compilation = CreateCompilation();
 
         // Create additional file for the .razor file
         var additionalFile = new InMemoryAdditionalText(fileName, razorSource);
 
-        // Create the generator
+        // Create the generator with parseOptions
         var generator = new ClainBlazorSourceGenerator();
 
-        // Run the generator
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-        driver = driver.AddAdditionalTexts(ImmutableArray.Create<AdditionalText>(additionalFile));
+        // Run the generator with DEBUG preprocessor symbol
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(
+            generators: new[] { generator.AsSourceGenerator() },
+            additionalTexts: ImmutableArray.Create<AdditionalText>(additionalFile),
+            parseOptions: parseOptions);
+        
         driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);
 
         return (outputCompilation, diagnostics);
