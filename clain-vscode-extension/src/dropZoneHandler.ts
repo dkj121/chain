@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import { RazorCodeInserter, InsertionPoint } from './razorCodeInserter';
 import { DropInfo, Component } from './toolboxPanel';
 
@@ -54,10 +55,23 @@ export class DropZoneHandler {
         const targetUri = vscode.Uri.file(dropInfo.targetFile);
         const targetPath = targetUri.fsPath;
 
-        // Check if target is within workspace
+        // Resolve symlinks to prevent directory traversal attacks
+        let realTargetPath: string;
+        try {
+            realTargetPath = fs.realpathSync(targetPath);
+        } catch (error) {
+            throw new Error(`Cannot resolve target file path: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+
+        // Check if resolved target is within workspace
         const isInWorkspace = workspaceFolders.some(folder => {
-            const folderPath = folder.uri.fsPath;
-            return targetPath.startsWith(folderPath + path.sep) || targetPath === folderPath;
+            let realFolderPath: string;
+            try {
+                realFolderPath = fs.realpathSync(folder.uri.fsPath);
+            } catch (error) {
+                return false;
+            }
+            return realTargetPath.startsWith(realFolderPath + path.sep) || realTargetPath === realFolderPath;
         });
 
         if (!isInWorkspace) {

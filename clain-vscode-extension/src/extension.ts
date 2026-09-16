@@ -55,8 +55,6 @@ class WebviewMessageHandler implements MessageHandler {
         }
     }
 }
-    }
-}
 
 export function activate(context: vscode.ExtensionContext) {
     const outputChannel = vscode.window.createOutputChannel('Clain - Kestrel');
