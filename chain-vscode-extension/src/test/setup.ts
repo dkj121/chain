@@ -106,6 +106,19 @@ const vscode = {
         replace() {}
         insert() {}
         delete() {}
+    },
+
+    commands: {
+        executeCommand: async (command: string, ...args: any[]) => {
+            // Mock command execution for integration tests
+            // Return success without actual implementation
+            return Promise.resolve(undefined);
+        },
+        registerCommand: (command: string, callback: (...args: any[]) => any) => {
+            return {
+                dispose: () => {}
+            };
+        }
     }
 };
 
