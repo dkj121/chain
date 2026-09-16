@@ -30,16 +30,30 @@ public class ClainBlazorSourceGeneratorTests
     [Fact]
     public void Generator_IncludesNormalizedFilePath_InGeneratedCode()
     {
-        // Arrange
-        var razorSource = "<div>Test</div>";
+        // Arrange - must include <div> for generator to process the file
+        var razorSource = @"@page ""/test""
+<div>Test</div>";
         var filePath = @"C:\Project\Components\TestComponent.razor";
 
         // Act
-        var (compilation, _) = RunGenerator(razorSource, filePath);
+        var (compilation, diagnostics) = RunGenerator(razorSource, filePath);
+
+        // Debug: Check diagnostics
+        var diagMessages = string.Join("\n", diagnostics.Select(d => $"  {d.Id}: {d.GetMessage()}"));
+        if (!string.IsNullOrEmpty(diagMessages))
+        {
+            throw new System.Exception($"Diagnostics:\n{diagMessages}");
+        }
 
         // Assert
-        var generatedSource = GetGeneratedSource(compilation, "TestComponent.Chain.g.cs");
-        Assert.NotNull(generatedSource);
+        // Debug: print all generated file paths
+        var allPaths = string.Join("\n", compilation.SyntaxTrees.Select(t => $"  '{t.FilePath}'"));
+
+        // Use Contains instead of EndsWith since generator may add prefixes to hint names
+        var tree = compilation.SyntaxTrees.FirstOrDefault(t => t.FilePath.Contains("TestComponent.Chain.g.cs"));
+        Assert.NotNull(tree ?? throw new System.Exception($"TestComponent.Chain.g.cs not found. Generated files:\n{allPaths}"));
+
+        var generatedSource = tree.ToString();
 
         // Path should be normalized to forward slashes
         Assert.Contains("C:/Project/Components/TestComponent.razor", generatedSource);
@@ -75,7 +89,7 @@ public class ClainBlazorSourceGeneratorTests
             .Select(t => System.IO.Path.GetFileName(t.FilePath))
             .ToList();
 
-        Assert.Contains("ClainBlazorSourceGenerator.g.cs", generatedFiles);
+        Assert.Contains("ChainBlazorSourceGenerator.g.cs", generatedFiles);
     }
 
     private (Compilation, ImmutableArray<Diagnostic>) RunGenerator(string razorSource, string fileName)
@@ -88,7 +102,7 @@ public class ClainBlazorSourceGeneratorTests
         var additionalFile = new InMemoryAdditionalText(fileName, razorSource);
 
         // Create the generator with parseOptions
-        var generator = new ClainBlazorSourceGenerator();
+        var generator = new ChainBlazorSourceGenerator();
 
         // Run the generator with DEBUG preprocessor symbol
         GeneratorDriver driver = CSharpGeneratorDriver.Create(

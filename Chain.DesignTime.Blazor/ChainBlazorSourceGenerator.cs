@@ -17,17 +17,16 @@ namespace Chain.DesignTime.Blazor
     /// Phase 1: Minimal implementation for single div element in simple components.
     /// </summary>
     [Generator]
-    public class ClainBlazorSourceGenerator : IIncrementalGenerator
+    public class ChainBlazorSourceGenerator : IIncrementalGenerator
     {
-        private const string GeneratorName = "ClainBlazorSourceGenerator";
+        private const string GeneratorName = "ChainBlazorSourceGenerator";
         private const string GeneratorVersion = "0.1.0";
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-#if DEBUG || CLAIN_DESIGN
             // Register a source output that will be invoked for each compilation
             context.RegisterPostInitializationOutput(ctx => ctx.AddSource(
-                "ClainBlazorSourceGenerator.g.cs",
+                "ChainBlazorSourceGenerator.g.cs",
                 SourceText.From(GetGeneratorAttributeSource(), Encoding.UTF8)));
 
             // Get all additional files (.razor files)
@@ -43,7 +42,6 @@ namespace Chain.DesignTime.Blazor
             {
                 GenerateSourceForRazorFiles(spc, source.Left, source.Right);
             });
-#endif
         }
 
         private void GenerateSourceForRazorFiles(
@@ -51,6 +49,15 @@ namespace Chain.DesignTime.Blazor
             Compilation compilation,
             ImmutableArray<AdditionalText> razorFiles)
         {
+            // Debug: Report how many files we're processing
+            if (razorFiles.IsEmpty)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(
+                    new DiagnosticDescriptor("CHAIN001", "Debug", "No razor files found", "Debug", DiagnosticSeverity.Warning, true),
+                    Location.None));
+                return;
+            }
+
             foreach (var razorFile in razorFiles)
             {
                 // Phase 1: Minimal implementation - detect single <div> and generate attribute
@@ -80,7 +87,9 @@ namespace Chain.DesignTime.Blazor
             }
 
             // Extract component name from file path
-            var fileName = System.IO.Path.GetFileNameWithoutExtension(razorFile.Path);
+            // Handle both Windows (C:\path\file.razor) and Unix (/path/file.razor) paths
+            var normalizedPath = razorFile.Path.Replace('\\', '/');
+            var fileName = System.IO.Path.GetFileNameWithoutExtension(normalizedPath);
             var componentNamespace = GetComponentNamespace(compilation, fileName);
 
             // Generate source with attribute injection
