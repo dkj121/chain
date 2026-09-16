@@ -1,6 +1,7 @@
 .vscode/**
 .vscode-test/**
 src/**
+test/**
 .gitignore
 .yarnrc
 vsc-extension-quickstart.md
@@ -8,3 +9,16 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+!out/**/*.d.ts
+node_modules/**
+*.vsix
+.DS_Store
+.env
+.env.*
+*.log
+coverage/**
+.nyc_output/**
+*.tsbuildinfo
+create-icon.sh
+icon.svg
+ICON_TODO.md

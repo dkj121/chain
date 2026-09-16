@@ -1,53 +1,133 @@
-# Chain VS Code Extension
+# Chain - AI-Driven Visual Design for ASP.NET Core Razor
 
-AI-driven visual design tool for ASP.NET Core Razor applications.
+Chain is an innovative VS Code extension that transforms how you build ASP.NET Core Razor applications by positioning code as the design language. It combines live preview, intelligent component discovery, and AI-powered design assistance to create a seamless development experience.
 
 ## Features
 
-- **Live Preview**: See your Razor views rendered in real-time
-- **Click-to-Locate**: Click any element in the preview to jump to its source code
-- **Properties Panel**: Edit element attributes visually
-- **AI Component Discovery**: Search and insert components using natural language
-- **Hot Reload**: See changes instantly without manual refresh
+### 🎨 Live Preview with Click-to-Source
+- Real-time rendering of your Razor views in an embedded preview panel
+- Click any element in the preview to instantly jump to its source code
+- Hot reload support keeps your preview synchronized with code changes
+
+### 🔍 AI-Powered Component Discovery
+- Natural language search to find or generate components
+- Dynamic toolbox populated from your actual project codebase
+- Drag-and-drop component insertion with intelligent placement
+
+### ⚡ Visual Property Editor
+- Edit HTML attributes and CSS properties through an intuitive properties panel
+- Live code preview shows changes as you type
+- Temporary inline styles with AI-powered consolidation
+
+### 🎯 Smart Code Navigation
+- Breadcrumb navigation shows component hierarchy and scope
+- Scope-aware drag operations prevent invalid code generation
+- AST-based understanding of Razor syntax and C# expressions
+
+### 🧪 Mock Data Integration
+- Generate semantic mock data from your ViewModels
+- Toggle between mock and real backend data during development
+- Design-time data injection without modifying controllers
+
+## Installation
+
+### From VSIX File
+1. Download the latest `.vsix` file from releases
+2. Open VS Code
+3. Go to Extensions (Ctrl+Shift+X)
+4. Click the `...` menu and select "Install from VSIX..."
+5. Select the downloaded `.vsix` file
+
+### From VS Code Marketplace
+Search for "Chain" in the VS Code Extensions marketplace and click Install.
 
 ## Getting Started
 
-1. Open an ASP.NET Core project in VS Code
-2. Run command: `Chain: Start Preview` (Ctrl+Shift+P)
-3. If multiple .csproj files are found, select the web project to preview
-4. Click any element in the preview to navigate to its source
+1. **Initialize Chain in Your Project**
+   - Open an ASP.NET Core Razor project in VS Code
+   - Open Command Palette (Ctrl+Shift+P)
+   - Run `Chain: Init Project`
+   - This creates the `.chain/` directory and installs the `Chain.DesignTime` NuGet package
 
-## Development
+2. **Start Live Preview**
+   - Open a Razor view file (`.cshtml`)
+   - Run `Chain: Start Preview` from Command Palette
+   - The preview panel will launch showing your rendered view
 
-### Build
+3. **Edit Visually**
+   - Click elements in the preview to select them
+   - Use the Properties panel to modify attributes
+   - See changes reflected immediately in both preview and code
 
-```bash
-npm install
-npm run compile
-```
+4. **Discover Components**
+   - Open the Chain sidebar from the Activity Bar
+   - Use the search box to find components with natural language
+   - Drag components into your preview to insert them into code
 
-### Run Tests
+## Commands
 
-```bash
-npm test
-```
-
-### Watch Mode
-
-```bash
-npm run watch
-```
+- `Chain: Start Preview` - Launch the live preview panel
+- `Chain: Stop Preview` - Stop the preview server
+- `Chain: Refresh Preview` - Manually refresh the preview
+- `Chain: Show Properties` - Open the properties panel
+- `Chain: Init Project` - Initialize Chain in your project
+- `Chain: Analyze Codebase` - Scan project for components and design tokens
+- `Chain: Generate Mock Data` - Create mock ViewModels for design-time rendering
+- `Chain: Data Switch` - Toggle between mock and real backend data
+- `Chain: Consolidate Styles` - Refactor inline styles into proper CSS
 
 ## Requirements
 
-- VS Code ^1.85.0
+- Visual Studio Code 1.85.0 or higher
 - .NET 6.0 or higher
 - ASP.NET Core project with Razor views
 
+## Extension Settings
+
+Chain contributes the following settings:
+
+- `chain.previewPort` - Port for the Kestrel preview server (default: 5000)
+- `chain.autoRefresh` - Automatically refresh preview on file save (default: true)
+- `chain.mockDataPath` - Path to mock-data.json file (default: `.chain/mock-data.json`)
+
+## Known Issues
+
+- Tag Helper coverage does not extend to `@Html.Raw()` or legacy HtmlHelper outputs
+- Preview requires successful Kestrel startup (database dependencies may block this)
+- Drag-and-drop scope validation requires AST parsing, which may be slow for very large files
+
+## Contributing
+
+Chain is an open-source project. Contributions are welcome!
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with tests
+4. Submit a pull request
+
+See [CONTRIBUTING.md](https://github.com/yourusername/chain/blob/main/CONTRIBUTING.md) for detailed guidelines.
+
 ## Release Notes
 
-### 0.1.0
+### 0.1.0 (Initial Release)
 
-- Initial MVP release
-- Basic preview functionality
-- Extension skeleton and webview foundation
+- Live Razor preview with click-to-source mapping
+- Properties panel for visual attribute editing
+- Component toolbox with AI-powered search
+- Mock data generation and injection
+- Style consolidation workflow
+- Integration with Chain.DesignTime NuGet package
+
+## License
+
+This extension is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## Support
+
+- [Report Issues](https://github.com/yourusername/chain/issues)
+- [Documentation](https://github.com/yourusername/chain/wiki)
+- [Discussions](https://github.com/yourusername/chain/discussions)
+
+---
+
+**Enjoy building beautiful Razor applications with Chain!**

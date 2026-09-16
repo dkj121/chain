@@ -4,12 +4,34 @@
   "description": "AI-driven visual design tool for ASP.NET Core Razor applications",
   "version": "0.1.0",
   "publisher": "chain",
+  "license": "MIT",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
-    "Other"
+    "Programming Languages",
+    "Visualization"
   ],
+  "keywords": [
+    "razor",
+    "asp.net",
+    "asp.net core",
+    "design",
+    "visual design",
+    "ui builder",
+    "component",
+    "preview",
+    "live reload",
+    "ai"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/chain.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/chain/issues"
+  },
   "activationEvents": [
     "onCommand:chain.startPreview",
     "onCommand:chain.initProject",
