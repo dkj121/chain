@@ -7,10 +7,34 @@ import { DropInfo, Component } from '../../toolboxPanel';
 describe('DropZoneHandler', () => {
     let dropZoneHandler: DropZoneHandler;
     let mockCodeInserter: RazorCodeInserter;
+    let allowedComponents: Component[];
 
     beforeEach(() => {
         mockCodeInserter = new RazorCodeInserter();
-        dropZoneHandler = new DropZoneHandler(mockCodeInserter);
+        allowedComponents = [
+            {
+                id: 'html-button',
+                name: 'Button',
+                category: 'html',
+                template: '<button>Click me</button>',
+                icon: '🔘'
+            },
+            {
+                id: 'bootstrap-card',
+                name: 'Card',
+                category: 'bootstrap',
+                template: '<div class="card"></div>',
+                icon: '🃏'
+            },
+            {
+                id: 'razor-foreach',
+                name: 'ForEach',
+                category: 'razor',
+                template: '@foreach (var item in Model) { }',
+                icon: '🔁'
+            }
+        ];
+        dropZoneHandler = new DropZoneHandler(mockCodeInserter, allowedComponents);
     });
 
     describe('Target Location Parsing', () => {
@@ -71,6 +95,13 @@ describe('DropZoneHandler', () => {
 
             assert.strictEqual(indentation, '');
         });
+
+        it('Should cap indentation at MAX_INDENTATION (200)', () => {
+            const indentation = (dropZoneHandler as any).detectIndentationLevel(500);
+
+            assert.strictEqual(indentation.length, 200);
+            assert.strictEqual(indentation, ' '.repeat(200));
+        });
     });
 
     describe('Drop Target Validation', () => {
@@ -124,7 +155,7 @@ describe('DropZoneHandler', () => {
     });
 
     describe('Drop Handling Integration', () => {
-        it('Should coordinate drop with code inserter', async () => {
+        it('Should reject drop when no workspace open', async () => {
             const dropInfo: DropInfo = {
                 componentId: 'html-button',
                 targetFile: '/path/to/file.cshtml',
@@ -146,8 +177,73 @@ describe('DropZoneHandler', () => {
                 icon: '🔘'
             };
 
-            // Should not throw
-            await dropZoneHandler.handleDrop(dropInfo, component);
+            // Should throw when no workspace is open
+            try {
+                await dropZoneHandler.handleDrop(dropInfo, component);
+                assert.fail('Should have thrown error');
+            } catch (error: any) {
+                assert.ok(error.message.includes('No workspace folder open'));
+            }
+        });
+
+        it('Should reject unknown component ID', async () => {
+            const dropInfo: DropInfo = {
+                componentId: 'unknown-component',
+                targetFile: '/path/to/file.cshtml',
+                targetLine: 10,
+                targetChar: 4,
+                position: 'before',
+                context: {
+                    parentElement: 'div',
+                    siblingElements: [],
+                    razorBlock: undefined
+                }
+            };
+
+            const unknownComponent: Component = {
+                id: 'unknown-component',
+                name: 'Unknown',
+                category: 'html',
+                template: '<div>Unknown</div>',
+                icon: '❓'
+            };
+
+            try {
+                await dropZoneHandler.handleDrop(dropInfo, unknownComponent);
+                assert.fail('Should have thrown error');
+            } catch (error: any) {
+                assert.ok(error.message.includes('Unknown component ID'));
+            }
+        });
+
+        it('Should reject component data tampering', async () => {
+            const dropInfo: DropInfo = {
+                componentId: 'html-button',
+                targetFile: '/path/to/file.cshtml',
+                targetLine: 10,
+                targetChar: 4,
+                position: 'before',
+                context: {
+                    parentElement: 'div',
+                    siblingElements: [],
+                    razorBlock: undefined
+                }
+            };
+
+            const tamperedComponent: Component = {
+                id: 'html-button',
+                name: 'Button',
+                category: 'html',
+                template: '<script>alert("xss")</script>', // Tampered template
+                icon: '🔘'
+            };
+
+            try {
+                await dropZoneHandler.handleDrop(dropInfo, tamperedComponent);
+                assert.fail('Should have thrown error');
+            } catch (error: any) {
+                assert.ok(error.message.includes('Component data mismatch'));
+            }
         });
     });
 });
