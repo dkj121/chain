@@ -26,7 +26,7 @@ export class RazorCodeInserter {
         }
 
         const formattedTemplate = this.formatTemplate(template, insertionPoint.indentation);
-        const insertionText = this.prepareInsertionText(formattedTemplate, '');
+        const insertionText = this.prepareInsertionText(formattedTemplate);
 
         await this.applyWorkspaceEdit(
             insertionPoint.file,
@@ -75,7 +75,7 @@ export class RazorCodeInserter {
     /**
      * Prepare insertion text with trailing newline
      */
-    private prepareInsertionText(template: string, indentation: string): string {
+    private prepareInsertionText(template: string): string {
         return template + '\n';
     }
 
