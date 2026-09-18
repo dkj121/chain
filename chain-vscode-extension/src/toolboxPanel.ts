@@ -1,5 +1,4 @@
 import { SelectionStateManager } from './selectionStateManager';
-import { AIComponentSearch, SearchResult } from './aiComponentSearch';
 
 export interface Component {
     id: string;
@@ -32,45 +31,12 @@ export class ToolboxPanel {
     private extensionUri: any;
     private selectionManager: SelectionStateManager;
     private components: Component[];
-    private aiSearch: AIComponentSearch;
     private searchResults: Component[] = [];
 
     constructor(extensionUri: any, selectionManager: SelectionStateManager) {
         this.extensionUri = extensionUri;
         this.selectionManager = selectionManager;
         this.components = this.initializeComponents();
-        this.aiSearch = new AIComponentSearch();
-        this.aiSearch.setLocalComponents(this.components);
-    }
-
-    /**
-     * Set API key for AI-powered component search
-     */
-    public setApiKey(apiKey: string): void {
-        this.aiSearch.setApiKey(apiKey);
-    }
-
-    /**
-     * Search components using AI or keyword matching
-     */
-    public async searchComponents(query: string): Promise<Component[]> {
-        if (!query.trim()) {
-            this.searchResults = [];
-            return this.components;
-        }
-
-        const results = await this.aiSearch.search(query);
-
-        // Convert SearchResult to Component format
-        this.searchResults = results.map((r, index) => ({
-            id: r.id || `search-result-${index}`,
-            name: r.name,
-            category: (r.category as any) || 'custom',
-            template: r.template,
-            icon: r.icon || '🔍'
-        }));
-
-        return this.searchResults;
     }
 
     /**

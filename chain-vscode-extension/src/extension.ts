@@ -224,32 +224,6 @@ export function activate(context: vscode.ExtensionContext) {
         toolboxPanel.show();
     });
 
-    // Chain Skills Commands
-    const initProjectCommand = vscode.commands.registerCommand('chain.initProject', async () => {
-        vscode.window.showInformationMessage('Chain: Init Project - Implementation pending');
-        // TODO: Load and execute .chain/docs/init.md skill
-    });
-
-    const analyzeCodebaseCommand = vscode.commands.registerCommand('chain.analyzeCodebase', async () => {
-        vscode.window.showInformationMessage('Chain: Analyze Codebase - Implementation pending');
-        // TODO: Load and execute .chain/docs/analyze-codebase.md skill
-    });
-
-    const generateMockDataCommand = vscode.commands.registerCommand('chain.generateMockData', async () => {
-        vscode.window.showInformationMessage('Chain: Generate Mock Data - Implementation pending');
-        // TODO: Load and execute .chain/docs/generate-mock-data.md skill
-    });
-
-    const dataSwitchCommand = vscode.commands.registerCommand('chain.dataSwitch', async () => {
-        vscode.window.showInformationMessage('Chain: Data Switch - Implementation pending');
-        // TODO: Load and execute .chain/docs/data-switch.md skill
-    });
-
-    const consolidateStylesCommand = vscode.commands.registerCommand('chain.consolidateStyles', async () => {
-        vscode.window.showInformationMessage('Chain: Consolidate Styles - Implementation pending');
-        // TODO: Load and execute .chain/docs/style-consolidation.md skill
-    });
-
     context.subscriptions.push(
         startPreviewCommand,
         stopPreviewCommand,
@@ -257,11 +231,6 @@ export function activate(context: vscode.ExtensionContext) {
         propertiesPanelProvider,
         showPropertiesCommand,
         showToolboxCommand,
-        initProjectCommand,
-        analyzeCodebaseCommand,
-        generateMockDataCommand,
-        dataSwitchCommand,
-        consolidateStylesCommand,
         kestrelManager,
         webviewManager
     );

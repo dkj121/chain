@@ -24,11 +24,6 @@ Chain is an innovative VS Code extension that transforms how you build ASP.NET C
 - Scope-aware drag operations prevent invalid code generation
 - AST-based understanding of Razor syntax and C# expressions
 
-### 🧪 Mock Data Integration
-- Generate semantic mock data from your ViewModels
-- Toggle between mock and real backend data during development
-- Design-time data injection without modifying controllers
-
 ## Installation
 
 ### From VSIX File
@@ -70,11 +65,6 @@ Search for "Chain" in the VS Code Extensions marketplace and click Install.
 - `Chain: Stop Preview` - Stop the preview server
 - `Chain: Refresh Preview` - Manually refresh the preview
 - `Chain: Show Properties` - Open the properties panel
-- `Chain: Init Project` - Initialize Chain in your project
-- `Chain: Analyze Codebase` - Scan project for components and design tokens
-- `Chain: Generate Mock Data` - Create mock ViewModels for design-time rendering
-- `Chain: Data Switch` - Toggle between mock and real backend data
-- `Chain: Consolidate Styles` - Refactor inline styles into proper CSS
 
 ## Requirements
 
@@ -88,7 +78,6 @@ Chain contributes the following settings:
 
 - `chain.previewPort` - Port for the Kestrel preview server (default: 5000)
 - `chain.autoRefresh` - Automatically refresh preview on file save (default: true)
-- `chain.mockDataPath` - Path to mock-data.json file (default: `.chain/mock-data.json`)
 
 ## Known Issues
 
@@ -114,7 +103,6 @@ See [CONTRIBUTING.md](https://github.com/yourusername/chain/blob/main/CONTRIBUTI
 - Live Razor preview with click-to-source mapping
 - Properties panel for visual attribute editing
 - Component toolbox with AI-powered search
-- Mock data generation and injection
 - Style consolidation workflow
 - Integration with Chain.DesignTime NuGet package
 

@@ -40,7 +40,6 @@ Create `.chain/` in the workspace root:
 .chain/
 ├── docs/           # Skill definitions
 ├── design.json     # Project structure index (populated by analyze-codebase)
-├── mock-data.json  # Mock ViewModels (populated by generate-mock-data)
 ├── config.json     # Extension settings
 └── .gitignore      # Exclude workspace.json
 ```

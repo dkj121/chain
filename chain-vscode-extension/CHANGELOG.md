@@ -23,8 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Properties panel for visual attribute editing
 - Component toolbox with project-based discovery
 - AI-powered component search capability
-- Mock data generation from ViewModels
-- Data mode switching (mock vs. real backend)
 - Style consolidation workflow for inline styles
 - Integration with Chain.DesignTime NuGet package
 - Breadcrumb navigation showing component hierarchy
@@ -40,7 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom Razor Tag Helper for source mapping
 - WebView-based preview rendering
 - File system watching for hot reload
-- Mock data middleware for development mode
 
 ### Known Limitations
 - Tag Helper coverage does not extend to `@Html.Raw()` outputs

@@ -32,14 +32,6 @@
   "bugs": {
     "url": "https://github.com/yourusername/chain/issues"
   },
-  "activationEvents": [
-    "onCommand:chain.startPreview",
-    "onCommand:chain.initProject",
-    "onCommand:chain.analyzeCodebase",
-    "onCommand:chain.generateMockData",
-    "onCommand:chain.dataSwitch",
-    "onCommand:chain.consolidateStyles"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -58,26 +50,6 @@
       {
         "command": "chain.showProperties",
         "title": "Chain: Show Properties"
-      },
-      {
-        "command": "chain.initProject",
-        "title": "Chain: Init Project"
-      },
-      {
-        "command": "chain.analyzeCodebase",
-        "title": "Chain: Analyze Codebase"
-      },
-      {
-        "command": "chain.generateMockData",
-        "title": "Chain: Generate Mock Data"
-      },
-      {
-        "command": "chain.dataSwitch",
-        "title": "Chain: Data Switch"
-      },
-      {
-        "command": "chain.consolidateStyles",
-        "title": "Chain: Consolidate Styles"
       }
     ],
     "views": {

@@ -238,7 +238,6 @@ Show the user:
 
 Next steps:
 - Review design.json for accuracy
-- Run "Chain: Generate Mock Data" for design-time preview
 - Run "Chain: Start Preview" to begin visual editing
 ```
 

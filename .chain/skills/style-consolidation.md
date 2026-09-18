@@ -5,17 +5,12 @@ description: Consolidate scattered inline styles and utility classes into semant
 
 # Context
 
-**Importers/Callers:** VS Code extension command `chain.consolidateStyles`, invoked after AI editing sessions or from Command Palette. AI editing workflow in `chain-vscode-extension/src/aiEditingSession.ts` can automatically trigger this skill. Referenced in `.chain/docs/style-consolidation.md` documentation.
-
 **Affected API:** Reads `.cshtml` files and `wwwroot/css/*.css` files. Writes updated `.cshtml` markup and consolidated CSS classes to appropriate stylesheets. Reads `design.json` for `cssArchitecture` to determine consolidation strategy. Parses inline `style=""` attributes and generates semantic CSS class definitions.
 
 **Data Schema:** 
-- Reads `.chain/design.json.cssArchitecture`: string ("tailwind" | "bootstrap" | "custom" | "none")
 - Modifies `.cshtml` files: replaces inline `style=""` attributes with semantic class names
 - Writes to `wwwroot/css/components.css` or project-appropriate stylesheet: new CSS class definitions
 - Input: `.cshtml` files with inline styles; Output: refactored markup + extracted CSS classes
-
-**User's instruction:** Build Claude Code skills for the five primary AI workflows: init, analyze-codebase, generate-mock-data, data-switch, and style-consolidation. Each skill should match the functional specification from the .chain/docs/ folder and enable the VS Code extension to invoke Claude for these operations.
 
 ---
 
