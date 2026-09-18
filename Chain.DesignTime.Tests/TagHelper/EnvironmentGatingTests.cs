@@ -11,7 +11,7 @@ namespace Chain.DesignTime.Tests.TagHelper
     {
         [Theory]
         [InlineData("Development")]
-        [InlineData("ClainDesign")]
+        [InlineData("ChainDesign")]
         public void Process_InjectsAttribute_InDesignTimeEnvironments(string environmentName)
         {
             var tagHelper = CreateTagHelper(environmentName);
@@ -40,7 +40,7 @@ namespace Chain.DesignTime.Tests.TagHelper
         [Fact]
         public void Process_DoesNotInjectAttribute_WhenEnvironmentIsNull()
         {
-            var tagHelper = new ClainSourceTagHelper(hostEnvironment: null);
+            var tagHelper = new ChainSourceTagHelper(hostEnvironment: null);
             var context = CreateContextWithSourceSpan();
             var output = CreateOutput("div");
 
@@ -68,14 +68,14 @@ namespace Chain.DesignTime.Tests.TagHelper
         }
 
         [Fact]
-        public void IsDesignTimeEnvironment_ReturnsTrue_ForClainDesign()
+        public void IsDesignTimeEnvironment_ReturnsTrue_ForChainDesign()
         {
-            Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("ClainDesign"));
+            Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("ChainDesign"));
         }
 
-        private static ClainSourceTagHelper CreateTagHelper(string environmentName)
+        private static ChainSourceTagHelper CreateTagHelper(string environmentName)
         {
-            return new ClainSourceTagHelper(new StubHostEnvironment(environmentName));
+            return new ChainSourceTagHelper(new StubHostEnvironment(environmentName));
         }
 
         private static TagHelperContext CreateContextWithSourceSpan()

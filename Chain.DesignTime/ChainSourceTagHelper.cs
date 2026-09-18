@@ -10,11 +10,11 @@ namespace Chain.DesignTime
     /// injection is removed entirely by conditional compilation.
     /// </summary>
     [HtmlTargetElement("*")]
-    public class ClainSourceTagHelper : TagHelper
+    public class ChainSourceTagHelper : TagHelper
     {
         private readonly IHostEnvironment? _hostEnvironment;
 
-        public ClainSourceTagHelper(IHostEnvironment? hostEnvironment)
+        public ChainSourceTagHelper(IHostEnvironment? hostEnvironment)
         {
             _hostEnvironment = hostEnvironment;
         }

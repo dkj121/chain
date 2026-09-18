@@ -15,7 +15,7 @@ Enables VS Code extension to provide click-to-source functionality for Blazor `.
 
 ## Architecture
 
-### ClainBlazorSourceGenerator
+### ChainBlazorSourceGenerator
 Main source generator implementing `IIncrementalGenerator`.
 
 **Phase 1 (Current)**: Minimal implementation

@@ -33,7 +33,7 @@ export class WebviewManager {
         this.connectionState = 'connecting';
 
         this.panel = vscodeWindow.createWebviewPanel(
-            'clainPreview',
+            'chainPreview',
             'Chain Preview',
             1, // ViewColumn.One
             {

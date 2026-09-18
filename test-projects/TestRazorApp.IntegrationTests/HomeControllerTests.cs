@@ -38,7 +38,7 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task Index_ContainsDataClainSrcAttributes()
+    public async Task Index_ContainsDataChainSrcAttributes()
     {
         // Act
         var response = await _client.GetAsync("/");
@@ -100,7 +100,7 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task Products_ContainsCardPartialWithDataClainSrc()
+    public async Task Products_ContainsCardPartialWithDataChainSrc()
     {
         // Act
         var response = await _client.GetAsync("/Home/Products");

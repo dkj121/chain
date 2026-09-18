@@ -53,7 +53,7 @@ Phase 1 establishes the infrastructure for Blazor source mapping with a minimal 
 
 ```csharp
 [Generator]
-public class ClainBlazorSourceGenerator : IIncrementalGenerator
+public class ChainBlazorSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -115,7 +115,7 @@ public partial class Counter
 
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        var wrappedBuilder = new ClainRenderTreeBuilder(builder, "Counter.razor");
+        var wrappedBuilder = new ChainRenderTreeBuilder(builder, "Counter.razor");
 
         wrappedBuilder.OpenElement(0, "h3", line: 3, char: 0);
         wrappedBuilder.AddContent(1, "Counter");
@@ -130,9 +130,9 @@ public partial class Counter
 #endif
 ```
 
-**ClainRenderTreeBuilder Wrapper**:
+**ChainRenderTreeBuilder Wrapper**:
 ```csharp
-internal class ClainRenderTreeBuilder
+internal class ChainRenderTreeBuilder
 {
     private readonly RenderTreeBuilder _inner;
     private readonly string _sourceFile;
@@ -197,7 +197,7 @@ dotnet build
 
 ### Debugging the Generator
 
-1. Set breakpoints in `ClainBlazorSourceGenerator.cs`
+1. Set breakpoints in `ChainBlazorSourceGenerator.cs`
 2. Debug a test that runs the generator
 3. Or attach to `dotnet build` process (advanced)
 

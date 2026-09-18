@@ -288,18 +288,18 @@ export class IframeContentProvider implements WebviewContent {
                 document.addEventListener('click', function(e) {
                     // Find the clicked element or closest ancestor with data-chain-src
                     let element = e.target;
-                    let dataClainSrc = null;
+                    let dataChainSrc = null;
 
                     while (element && element !== document.body) {
                         if (element.hasAttribute && element.hasAttribute('data-chain-src')) {
-                            dataClainSrc = element.getAttribute('data-chain-src');
+                            dataChainSrc = element.getAttribute('data-chain-src');
                             break;
                         }
                         element = element.parentElement;
                     }
 
-                    if (dataClainSrc) {
-                        console.log('Clicked element with data-chain-src:', dataClainSrc);
+                    if (dataChainSrc) {
+                        console.log('Clicked element with data-chain-src:', dataChainSrc);
 
                         // Send message to parent window (webview)
                         window.parent.postMessage({
@@ -312,7 +312,7 @@ export class IframeContentProvider implements WebviewContent {
                                 className: e.target.className || undefined,
                                 textContent: e.target.textContent?.substring(0, 100) || undefined,
                                 timestamp: Date.now(),
-                                dataClainSrc: dataClainSrc
+                                dataChainSrc: dataChainSrc
                             }
                         }, '*');
 

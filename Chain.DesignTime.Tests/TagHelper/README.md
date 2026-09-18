@@ -1,10 +1,10 @@
 # Tag Helper Tests
 
-Tests for the `ClainSourceTagHelper` that injects `data-chain-src` attributes into Razor Pages/MVC views (`.cshtml` files).
+Tests for the `ChainSourceTagHelper` that injects `data-chain-src` attributes into Razor Pages/MVC views (`.cshtml` files).
 
 ## Test Coverage
 
-### ClainSourceTagHelperTests
+### ChainSourceTagHelperTests
 Verifies the core Tag Helper functionality.
 
 **Coverage:**
@@ -19,7 +19,7 @@ Verifies environment-based conditional attribute emission.
 
 **Coverage:**
 - Attributes emitted in Development environment
-- Attributes emitted in ClainDesign environment
+- Attributes emitted in ChainDesign environment
 - No attributes in Production environment
 - Environment detection using shared utilities
 - Integration with `IHostEnvironment`

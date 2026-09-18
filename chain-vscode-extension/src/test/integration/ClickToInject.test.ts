@@ -163,7 +163,7 @@ describe('Click-to-Inject Integration', () => {
                 position: 'before'
             };
 
-            const parsed = (dropEventHandler as any).parseDataClainSrc(message.targetSrc);
+            const parsed = (dropEventHandler as any).parseDataChainSrc(message.targetSrc);
 
             assert.strictEqual(parsed.file, '/workspace/Views/Home/Index.cshtml');
             assert.strictEqual(parsed.line, 10);
@@ -178,7 +178,7 @@ describe('Click-to-Inject Integration', () => {
                 position: 'after'
             };
 
-            const parsed = (dropEventHandler as any).parseDataClainSrc(message.targetSrc);
+            const parsed = (dropEventHandler as any).parseDataChainSrc(message.targetSrc);
 
             assert.strictEqual(parsed.file, 'C:/Users/Dev/Project/Views/Home/Index.cshtml');
             assert.strictEqual(parsed.line, 15);

@@ -41,7 +41,7 @@ class WebviewMessageHandler implements MessageHandler {
                 className: message.event.className,
                 textContent: message.event.textContent,
                 timestamp: message.event.timestamp || Date.now(),
-                dataClainSrc: message.event.dataClainSrc
+                dataChainSrc: message.event.dataChainSrc
             };
             this.clickHandler.handleClick(clickEvent);
         } else if (message.type === 'breadcrumbClick' && this.breadcrumbProvider) {

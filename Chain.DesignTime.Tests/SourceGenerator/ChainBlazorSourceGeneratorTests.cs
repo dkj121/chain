@@ -8,7 +8,7 @@ using Chain.DesignTime.Blazor;
 
 namespace Chain.DesignTime.Tests.SourceGenerator;
 
-public class ClainBlazorSourceGeneratorTests
+public class ChainBlazorSourceGeneratorTests
 {
     [Fact]
     public void Generator_EmitsFileForEachRazorComponent()

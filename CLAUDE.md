@@ -86,7 +86,7 @@ The toolbox dynamically populates by:
 **Implementation** (`Chain.DesignTime` NuGet package):
 ```csharp
 [HtmlTargetElement("*")]
-public class ClainSourceTagHelper : TagHelper
+public class ChainSourceTagHelper : TagHelper
 {
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
@@ -486,7 +486,7 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
 3. **Develop Chain.DesignTime NuGet Package**:
    ```bash
    dotnet new classlib -n Chain.DesignTime
-   # Implement ClainSourceTagHelper
+   # Implement ChainSourceTagHelper
    dotnet pack
    ```
 
@@ -514,7 +514,7 @@ Skills are loaded into Claude Code's context to standardize AI behavior. Located
 
 3. **Kestrel Startup Failures**:  
    - Database dependencies, external services may prevent startup
-   - **Solution**: Provide `ASPNETCORE_ENVIRONMENT=ClainDesign` mode with middleware that mocks external dependencies
+   - **Solution**: Provide `ASPNETCORE_ENVIRONMENT=ChainDesign` mode with middleware that mocks external dependencies
    - **Fallback**: Static AST analysis mode (no live preview, only structure view)
 
 ## Future Roadmap

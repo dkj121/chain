@@ -4,13 +4,13 @@ using Xunit;
 
 namespace Chain.DesignTime.Tests.TagHelper
 {
-    public class ClainSourceTagHelperTests
+    public class ChainSourceTagHelperTests
     {
         [Fact]
-        public void Process_AddsDataClainSrcAttribute_WhenSourceSpanAvailable()
+        public void Process_AddsDataChainSrcAttribute_WhenSourceSpanAvailable()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
+            var tagHelper = new ChainSourceTagHelper(StubHostEnvironment.Development);
             var context = CreateTagHelperContext(withSourceSpan: true);
             var output = CreateTagHelperOutput("div");
 
@@ -25,7 +25,7 @@ namespace Chain.DesignTime.Tests.TagHelper
         public void Process_DoesNotAddAttribute_WhenSourceSpanUnavailable()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
+            var tagHelper = new ChainSourceTagHelper(StubHostEnvironment.Development);
             var context = CreateTagHelperContext(withSourceSpan: false);
             var output = CreateTagHelperOutput("div");
 
@@ -40,7 +40,7 @@ namespace Chain.DesignTime.Tests.TagHelper
         public void GetRazorSourceSpan_ReturnsNull_WhenContextItemsEmpty()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
+            var tagHelper = new ChainSourceTagHelper(StubHostEnvironment.Development);
             var context = new TagHelperContext(
                 new TagHelperAttributeList(),
                 new Dictionary<object, object>(),
@@ -57,7 +57,7 @@ namespace Chain.DesignTime.Tests.TagHelper
         public void GetRazorSourceSpan_ExtractsFilePath_WhenRazorSourceSpanPresent()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
+            var tagHelper = new ChainSourceTagHelper(StubHostEnvironment.Development);
             var mockSourceSpan = new MockRazorSourceSpan
             {
                 FilePath = "Views/Home/Index.cshtml",
@@ -87,7 +87,7 @@ namespace Chain.DesignTime.Tests.TagHelper
         public void GetRazorSourceSpan_ExtractsFromSourceLocation_WhenPresent()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
+            var tagHelper = new ChainSourceTagHelper(StubHostEnvironment.Development);
             var mockLocation = new MockSourceLocation
             {
                 FilePath = "Views/Shared/_Layout.cshtml",
@@ -117,7 +117,7 @@ namespace Chain.DesignTime.Tests.TagHelper
         public void GetRazorSourceSpan_HandlesAlternativePropertyNames()
         {
             // Arrange
-            var tagHelper = new ClainSourceTagHelper(StubHostEnvironment.Development);
+            var tagHelper = new ChainSourceTagHelper(StubHostEnvironment.Development);
             var mockSourceSpan = new MockRazorSourceSpanAlternative
             {
                 FilePath = "Pages/Index.cshtml",

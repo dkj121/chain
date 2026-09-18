@@ -1,10 +1,10 @@
 # Source Generator Tests
 
-Tests for the `ClainBlazorSourceGenerator` that injects `data-chain-src` attributes into Blazor components (`.razor` files).
+Tests for the `ChainBlazorSourceGenerator` that injects `data-chain-src` attributes into Blazor components (`.razor` files).
 
 ## Test Coverage
 
-### ClainBlazorSourceGeneratorTests
+### ChainBlazorSourceGeneratorTests
 Verifies the Blazor source generator functionality.
 
 **Phase 1 Coverage:**

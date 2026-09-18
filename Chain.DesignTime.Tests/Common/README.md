@@ -8,7 +8,7 @@ Tests for shared utilities in `Chain.DesignTime.Shared`.
 Verifies environment name detection for design-time attribute emission.
 
 **Coverage:**
-- Development and ClainDesign environments return true
+- Development and ChainDesign environments return true
 - Production, Staging, and other environments return false
 - Case-insensitive matching
 - Null/empty string handling

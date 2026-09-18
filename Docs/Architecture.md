@@ -65,7 +65,7 @@ Chain provides click-to-source navigation for ASP.NET Core applications by injec
 
 **How it works**:
 1. Tag Helper runs during view rendering
-2. Checks `IHostEnvironment` for Development/ClainDesign
+2. Checks `IHostEnvironment` for Development/ChainDesign
 3. Extracts source location from Razor compiler metadata
 4. Injects `data-chain-src` attribute into HTML output
 
@@ -139,7 +139,7 @@ Attributes are only emitted in design-time environments:
 
 2. **Runtime environment check** (Tag Helper only)
    - `IHostEnvironment.EnvironmentName == "Development"`
-   - Or `IHostEnvironment.EnvironmentName == "ClainDesign"`
+   - Or `IHostEnvironment.EnvironmentName == "ChainDesign"`
 
 ## NuGet Package Strategy
 

@@ -8,7 +8,7 @@ export interface ClickEvent {
     className?: string;
     textContent?: string;
     timestamp: number;
-    dataClainSrc?: string;
+    dataChainSrc?: string;
 }
 
 export interface OutputChannel {
@@ -38,9 +38,9 @@ export class ClickHandler {
         this.outputChannel.appendLine(info);
 
         // If data-chain-src is present, navigate to source
-        if (event.dataClainSrc) {
+        if (event.dataChainSrc) {
             try {
-                await this.navigator.handleClickEvent(event.dataClainSrc, this.workspaceRoot);
+                await this.navigator.handleClickEvent(event.dataChainSrc, this.workspaceRoot);
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
                 this.outputChannel.appendLine(`Failed to navigate to source: ${errorMessage}`);

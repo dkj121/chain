@@ -49,7 +49,7 @@ export class DropEventHandler {
         }
 
         // Parse target location
-        const target = this.parseDataClainSrc(message.targetSrc);
+        const target = this.parseDataChainSrc(message.targetSrc);
 
         // Extract context
         const context = this.extractContext(message);
@@ -71,7 +71,7 @@ export class DropEventHandler {
     /**
      * Parse data-chain-src attribute format: "file.cshtml:line:char"
      */
-    private parseDataClainSrc(targetSrc: string): { file: string; line: number; character: number } {
+    private parseDataChainSrc(targetSrc: string): { file: string; line: number; character: number } {
         const parts = targetSrc.split(':');
 
         if (parts.length < 3) {

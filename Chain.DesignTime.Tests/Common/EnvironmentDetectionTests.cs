@@ -11,9 +11,9 @@ public class EnvironmentDetectionTests
     }
 
     [Fact]
-    public void IsDesignTimeEnvironment_ClainDesign_ReturnsTrue()
+    public void IsDesignTimeEnvironment_ChainDesign_ReturnsTrue()
     {
-        Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("ClainDesign"));
+        Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("ChainDesign"));
     }
 
     [Fact]
@@ -21,7 +21,7 @@ public class EnvironmentDetectionTests
     {
         Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("DEVELOPMENT"));
         Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("development"));
-        Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("claindesign"));
+        Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("chaindesign"));
         Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("CLAINDESIGN"));
     }
 
@@ -54,7 +54,7 @@ public class EnvironmentDetectionTests
     public void DesignTimeEnvironments_ContainsExpectedValues()
     {
         Assert.Contains("Development", EnvironmentDetection.DesignTimeEnvironments);
-        Assert.Contains("ClainDesign", EnvironmentDetection.DesignTimeEnvironments);
+        Assert.Contains("ChainDesign", EnvironmentDetection.DesignTimeEnvironments);
         Assert.Equal(2, EnvironmentDetection.DesignTimeEnvironments.Length);
     }
 }

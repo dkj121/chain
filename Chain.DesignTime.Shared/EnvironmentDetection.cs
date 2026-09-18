@@ -11,14 +11,14 @@ namespace Chain.DesignTime.Common
         /// <summary>
         /// Environment names in which source mapping attributes should be emitted.
         /// </summary>
-        public static readonly string[] DesignTimeEnvironments = { "Development", "ClainDesign" };
+        public static readonly string[] DesignTimeEnvironments = { "Development", "ChainDesign" };
 
         /// <summary>
         /// Checks if the given environment name is a design-time environment.
         /// Comparison is case-insensitive.
         /// </summary>
         /// <param name="environmentName">The environment name to check (e.g., "Development", "Production")</param>
-        /// <returns>True if the environment is Development or ClainDesign, false otherwise</returns>
+        /// <returns>True if the environment is Development or ChainDesign, false otherwise</returns>
         public static bool IsDesignTimeEnvironment(string? environmentName)
         {
             if (string.IsNullOrWhiteSpace(environmentName))

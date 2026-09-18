@@ -26,7 +26,7 @@ var span = new SourceSpanInfo
 ### EnvironmentDetection
 Determines whether to emit design-time attributes based on environment name.
 
-- **Design-time environments**: `Development`, `ClainDesign`
+- **Design-time environments**: `Development`, `ChainDesign`
 - **Production environments**: All others (no attributes emitted)
 
 ```csharp

@@ -47,7 +47,7 @@ describe('DropEventHandler', () => {
         it('Should parse data-chain-src format', () => {
             const targetSrc = '/path/to/file.cshtml:10:4';
 
-            const parsed = (dropEventHandler as any).parseDataClainSrc(targetSrc);
+            const parsed = (dropEventHandler as any).parseDataChainSrc(targetSrc);
 
             assert.strictEqual(parsed.file, '/path/to/file.cshtml');
             assert.strictEqual(parsed.line, 10);
@@ -58,7 +58,7 @@ describe('DropEventHandler', () => {
             const invalidSrc = 'invalid-format';
 
             assert.throws(() => {
-                (dropEventHandler as any).parseDataClainSrc(invalidSrc);
+                (dropEventHandler as any).parseDataChainSrc(invalidSrc);
             }, /Invalid data-chain-src format/);
         });
 
