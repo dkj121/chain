@@ -10,7 +10,7 @@ Verifies the Blazor source generator functionality.
 **Phase 1 Coverage:**
 - Generator produces source for components with `<div>` elements
 - Generator skips files without target elements
-- Conditional compilation (`#if DEBUG || CLAIN_DESIGN`) in generated code
+- Conditional compilation (`#if DEBUG || CHAIN_DESIGN`) in generated code
 - Normalized file paths (forward slashes) in generated code
 - Partial class generation with correct component name
 - Post-initialization output registration

@@ -22,7 +22,7 @@ public class EnvironmentDetectionTests
         Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("DEVELOPMENT"));
         Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("development"));
         Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("chaindesign"));
-        Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("CLAINDESIGN"));
+        Assert.True(EnvironmentDetection.IsDesignTimeEnvironment("CHAINDESIGN"));
     }
 
     [Fact]

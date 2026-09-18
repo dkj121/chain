@@ -9,7 +9,7 @@ Phase 1 establishes the infrastructure for Blazor source mapping with a minimal 
 ### Infrastructure
 - ✅ Roslyn incremental source generator setup
 - ✅ `.razor` file detection from `AdditionalFiles`
-- ✅ Conditional compilation (`#if DEBUG || CLAIN_DESIGN`)
+- ✅ Conditional compilation (`#if DEBUG || CHAIN_DESIGN`)
 - ✅ Partial class generation
 - ✅ Shared utilities integration
 - ✅ Comprehensive test suite
@@ -105,7 +105,7 @@ public partial class Counter : ComponentBase
 
 **Our Generator Should Add** (Phase 2+):
 ```csharp
-#if DEBUG || CLAIN_DESIGN
+#if DEBUG || CHAIN_DESIGN
 public partial class Counter
 {
     private void BuildRenderTreeOriginal(RenderTreeBuilder builder)

@@ -21,7 +21,7 @@ namespace Chain.DesignTime
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-#if DEBUG || CLAIN_DESIGN
+#if DEBUG || CHAIN_DESIGN
             if (!EnvironmentDetection.IsDesignTimeEnvironment(_hostEnvironment?.EnvironmentName))
             {
                 return;

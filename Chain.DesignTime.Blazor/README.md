@@ -11,7 +11,7 @@ Enables VS Code extension to provide click-to-source functionality for Blazor `.
 1. **Compile-time analysis**: Runs during Blazor compilation as an incremental source generator
 2. **Razor file detection**: Processes `.razor` files from `AdditionalFiles`
 3. **Code generation**: Generates partial classes that modify `BuildRenderTree` to inject `data-chain-src` attributes
-4. **Conditional compilation**: Only active under `#if DEBUG || CLAIN_DESIGN`
+4. **Conditional compilation**: Only active under `#if DEBUG || CHAIN_DESIGN`
 
 ## Architecture
 
@@ -34,7 +34,7 @@ Main source generator implementing `IIncrementalGenerator`.
 For a component `Counter.razor`:
 
 ```csharp
-#if DEBUG || CLAIN_DESIGN
+#if DEBUG || CHAIN_DESIGN
 namespace MyApp.Components
 {
     public partial class Counter

@@ -123,7 +123,7 @@ namespace Chain.DesignTime.Blazor
 // Source: {normalizedPath}
 // </auto-generated>
 
-#if DEBUG || CLAIN_DESIGN
+#if DEBUG || CHAIN_DESIGN
 namespace {namespaceName}
 {{
     /// <summary>

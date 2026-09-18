@@ -69,7 +69,7 @@ Chain provides click-to-source navigation for ASP.NET Core applications by injec
 3. Extracts source location from Razor compiler metadata
 4. Injects `data-chain-src` attribute into HTML output
 
-**Conditional compilation**: `#if DEBUG || CLAIN_DESIGN`
+**Conditional compilation**: `#if DEBUG || CHAIN_DESIGN`
 
 **Target**: .NET 10.0 (matches ASP.NET Core version)
 
@@ -83,7 +83,7 @@ Chain provides click-to-source navigation for ASP.NET Core applications by injec
 4. Generates partial classes that modify `BuildRenderTree`
 5. Injects attribute calls after `OpenElement` calls
 
-**Conditional compilation**: `#if DEBUG || CLAIN_DESIGN`
+**Conditional compilation**: `#if DEBUG || CHAIN_DESIGN`
 
 **Target**: netstandard2.0 (source generator compatibility)
 
@@ -133,9 +133,9 @@ data-chain-src="<normalized-path>:<line>:<character>"
 
 Attributes are only emitted in design-time environments:
 
-1. **Conditional compilation** (`#if DEBUG || CLAIN_DESIGN`)
+1. **Conditional compilation** (`#if DEBUG || CHAIN_DESIGN`)
    - Code removed entirely in Release builds
-   - Custom `CLAIN_DESIGN` symbol for fine-grained control
+   - Custom `CHAIN_DESIGN` symbol for fine-grained control
 
 2. **Runtime environment check** (Tag Helper only)
    - `IHostEnvironment.EnvironmentName == "Development"`
